@@ -46,8 +46,6 @@ namespace Manager
         
         public void LoadMap(JSONNode json)
         {
-            Grid.Instance.LoadMap();
-            
             Grid.Instance.OnCellClicked.AddListener((v2) => print(v2));
         }
     

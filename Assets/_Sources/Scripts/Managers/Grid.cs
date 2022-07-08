@@ -79,6 +79,7 @@ namespace Manager
                 });
             });
             
+            LoadMap();
         }
 
         public void LoadMap()
@@ -90,7 +91,7 @@ namespace Manager
                     SOSkeleton.MapData.MapCell cell = _mapData.layout[x].cells[y];
                     foreach (var gridlayoutHeight in _gridLayouts)
                     {
-                        if (cell != null && cell.height == gridlayoutHeight.height)
+                        if (cell.enabled == true && cell.height == gridlayoutHeight.height)
                         {
                             GetCell(x - Maximum, y - Maximum).IsSelectable = true;
                         }
@@ -155,7 +156,7 @@ namespace Manager
                 return null;
             }
             x += Maximum; y += Maximum; // Convert to grid coordinates because the grid is offset by Maximum (eg: -4;-4)
-
+            Debug.Log(gridlayoutHeight.cells.Count);
             return gridlayoutHeight.cells[x * GridSize + y];
         }
         

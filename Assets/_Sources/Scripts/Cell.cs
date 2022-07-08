@@ -16,7 +16,7 @@ public class Cell : MonoBehaviour
     public bool IsSelectable
     {
         get => _button.interactable;
-        set => gameObject.SetActive(value);
+        set => GetComponent<Image>().enabled = value;
     }
     
     private void Awake()

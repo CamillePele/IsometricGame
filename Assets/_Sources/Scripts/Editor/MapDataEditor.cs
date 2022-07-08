@@ -122,11 +122,7 @@ namespace Editor
                 EditorGUILayout.BeginHorizontal(tableStyle);
                 for (int x = -1; x < map.Size; x++) {
                     EditorGUILayout.BeginVertical ((x == -1) ? headerColumnStyle : columnStyle);
-                    
-                    if (x >= 0 && map.layoutEditor.Count <= x) {
-                        map.layoutEditor.Add(new List<SOSkeleton.MapData.MapCell>());
-                    }
-                    
+
                     for (int y = -1; y < map.Size; y++)
                     {
                         if (y == -1 && x == -1) {
@@ -135,7 +131,7 @@ namespace Editor
                             EditorGUILayout.EndHorizontal();
                         } else if (x == -1) {
                             EditorGUILayout.BeginVertical(columnHeaderStyle);
-                            EditorGUILayout.LabelField((y - map.Maximum).ToString(), rowLabelStyle);
+                            EditorGUILayout.LabelField((map.Maximum - y).ToString(), rowLabelStyle);
                             EditorGUILayout.EndHorizontal();
                         } else if (y == -1) {
                             EditorGUILayout.BeginVertical(rowHeaderStyle);
@@ -143,15 +139,13 @@ namespace Editor
                             EditorGUILayout.EndHorizontal();
                         }
 
-                        if (y >= 0 && x >= 0 && map.layoutEditor[x].Count <= y) {
-                            map.layoutEditor[x].Add(null);
-                        }
-                        
                         if (x >= 0 && y >= 0) {
                             EditorGUILayout.BeginHorizontal(rowStyle);
 
-                            if (map.layoutEditor[x][y].enabled) {
-                                int indexOld = heights.IndexOf(map.layoutEditor[x][y].height) + 1;
+                            int yPos = (map.Size-1) - y; // Invert y axis
+                            
+                            if (map.layoutEditor[x][yPos].enabled) {
+                                int indexOld = heights.IndexOf(map.layoutEditor[x][yPos].height) + 1;
                                 
                                 int index = EditorGUILayout.Popup(
                                     indexOld,
@@ -159,18 +153,18 @@ namespace Editor
                                     popupStyle);
                             
                                 if (index == 0) {
-                                    map.layoutEditor[x][y].enabled = false;
+                                    map.layoutEditor[x][yPos].enabled = false;
                                 } else if (index-1 > 0) {
                                     if (indexOld != index) {
-                                        map.layoutEditor[x][y].height = heights[index-1];
+                                        map.layoutEditor[x][yPos].height = heights[index-1];
                                     }
                                 }
                             }
                             else {
                                 bool empty = EditorGUILayout.Toggle(false, toggleStyle);
                                 if (empty) {
-                                    map.layoutEditor[x][y].enabled = true;
-                                    map.layoutEditor[x][y].height = _heightDefault;
+                                    map.layoutEditor[x][yPos].enabled = true;
+                                    map.layoutEditor[x][yPos].height = _heightDefault;
                                 }
                             }
                             
