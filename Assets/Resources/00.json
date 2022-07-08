@@ -1,0 +1,15 @@
+﻿{
+  "name" : "Dev Map",
+  "description" : "A map of the development process for a project.",
+  
+  "cells" : 
+  ["XXXXXXXXX",
+   "XXXXXXXXX",
+   "XXXX XXXX",
+   "XXXX XXXX",
+   "XXXX   XX",
+   "XXXX X XX",
+   "XXX  X  X",
+   "XXX XXX X",
+   "XXX     X"]
+}
