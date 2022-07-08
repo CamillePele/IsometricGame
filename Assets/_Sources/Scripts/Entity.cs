@@ -34,7 +34,7 @@ public class Entity : MonoBehaviour
 
     public void UpdatePosition()
     {
-        if (Position.x < -_gridManager.Maximum || Position.x > _gridManager.Maximum || Position.y < -_gridManager.Maximum || Position.y > _gridManager.Maximum)
+        if (Position.x < -Manager.Grid.Maximum || Position.x > Manager.Grid.Maximum || Position.y < -Manager.Grid.Maximum || Position.y > Manager.Grid.Maximum)
         {
             Debug.LogWarning("Trying to move outside of map", this);
             return;
