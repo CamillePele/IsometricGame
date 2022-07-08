@@ -15,3 +15,27 @@ MonoBehaviour:
   attackName: 
   attackDamage: 0
   attackCost: 0
+  _attackPatternArray:
+    gridSize: {x: 3, y: 5}
+    cellSize: {x: 32, y: 16}
+    cells:
+    - row:
+      - 0
+      - 50
+      - 0
+    - row:
+      - 0
+      - 80
+      - 0
+    - row:
+      - 0
+      - 90
+      - 0
+    - row:
+      - 0
+      - 100
+      - 90
+    - row:
+      - 0
+      - 0
+      - 0

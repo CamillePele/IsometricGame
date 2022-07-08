@@ -50,6 +50,16 @@ namespace Manager
         [SerializeField] private GridLayoutGroup _gridLayout;
         [SerializeField] private List<Cell> _cells;
 
+        public enum Direction
+        {
+            North,
+            East,
+            South,
+            West
+        }
+        
+        [SerializeField] private SOSkeleton.Attack _attackTemp; // TODO: remove this
+        
         [CanBeNull] public Cell HoverCell;
 
         public UnityEvent<Vector2> OnCellClicked = new UnityEvent<Vector2>();
@@ -83,7 +93,7 @@ namespace Manager
                 for (int y = 0; y < GridSize; y++)
                 {
                     Cell cell = GetCell(x - Maximum, y - Maximum);
-                    cell.IsSelectable = _mapData.layout.GetCell(x, (GridSize-1)-y); // Invert y axis 
+                    cell.IsSelectable = _mapData.Layout[x][y]; 
                 }
             }
             Utils.GeneralUtils.AfterXFrames(this, 1,() => {
@@ -93,7 +103,7 @@ namespace Manager
                 });
             });
 
-            ShowLayout(GetReachableCells(3), Vector2Int.zero, new Vector2Int(3, 3));
+            ShowLayout(_attackTemp.AttackPattern, Vector2Int.zero, new Vector2Int(1, 0), Direction.East, Color.red);
         }
 
         /// <summary>
@@ -102,14 +112,57 @@ namespace Manager
         /// <param name="layout">Cell to show</param>
         /// <param name="position">Position to show on the grid</param>
         /// <param name="pivot">Center of the layout</param>
-        public void ShowLayout(List<List<bool>> layout, Vector2Int position, Vector2Int pivot)
+        public void ShowLayout(List<List<bool>> layout, Vector2Int position, Vector2Int pivot, Direction direction, Color color)
         {
             for (int x = 0; x < layout.Count; x++)
             {
                 for (int y = 0; y < layout[x].Count; y++)
                 {
-                    if (x - pivot.x == 0 && y - pivot.y == 0) continue;
-                    if (layout[x][y]) GetCell(position.x + x - pivot.x,position.y + y - pivot.y).SetColor(Color.red);
+                    // Create copy of the parameters
+                    List<List<bool>> newLayout = new List<List<bool>>(layout);
+                    Vector2Int newPivot = pivot;
+                    (int xPos, int yPos) = (x, y);
+                    
+                    
+                    if (direction == Direction.South)
+                    {
+                        // Reverse the y axis layout
+                        newLayout = newLayout.Select(l => l.AsEnumerable().Reverse().ToList()).ToList();
+                        // Reverse the x axis layout
+                        newLayout = newLayout.AsEnumerable().Reverse().ToList();
+
+                        newPivot = new Vector2Int(newLayout.Count - 1 - pivot.x, newLayout[0].Count - 1 - pivot.y);
+                    }
+                    if (direction == Direction.East || direction == Direction.West)
+                    {
+                        //Exchange row and columns of newLayout
+                        newLayout = new List<List<bool>>(); // Clear newLayout
+                        for (int i = 0; i < layout[0].Count; i++)
+                        {
+                            newLayout.Add(new List<bool>());
+                            for (int j = 0; j < layout.Count; j++)
+                            {
+                                newLayout[i].Add(layout[j][i]); // Invert row and columns of newLayout
+                            }
+                        }
+                        newLayout = newLayout.Select(l => l.AsEnumerable().Reverse().ToList()).ToList(); // Reverse the x axis layout
+
+                        newPivot = new Vector2Int(pivot.y, pivot.x); // Exchange x and y axis of pivot
+                        
+                        (xPos, yPos) = (y, x); // Exchange x and y
+
+                        if (direction == Direction.West)
+                        {
+                            // Reverse the y axis layout
+                            newLayout = newLayout.Select(l => l.AsEnumerable().Reverse().ToList()).ToList();
+                            // Reverse the x axis layout
+                            newLayout = newLayout.AsEnumerable().Reverse().ToList();
+                            
+                            newPivot = new Vector2Int(newLayout.Count - 1 - newPivot.x, newLayout[0].Count - 1 - newPivot.y); // Invert x and y
+                        }
+                    }
+                    //          Offset by the position of the grid    Substract the pivot to get the position of the layout in the grid 
+                    if (newLayout[xPos][yPos]) GetCell(position.x + xPos - newPivot.x,position.y + yPos - newPivot.y).SetColor(color);
                 }
             }
         }

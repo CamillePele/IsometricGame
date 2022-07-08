@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel;
 using Array2DEditor;
-using JetBrains.Annotations;
 using UnityEngine;
 
 namespace SOSkeleton
@@ -16,6 +14,14 @@ namespace SOSkeleton
 
         public string displayName;
 
-        public Array2DBool layout = new Array2DBool();
+        [SerializeField] private Array2DBool _layoutArray = new Array2DBool();
+
+        public List<List<bool>> Layout
+        {
+            get
+            {
+                return Utils.Maths.Get2DList<bool, bool>(_layoutArray);
+            }
+        }
     }
 }

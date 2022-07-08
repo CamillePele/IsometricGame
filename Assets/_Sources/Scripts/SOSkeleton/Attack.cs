@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Array2DEditor;
 using UnityEngine;
 
 namespace SOSkeleton
@@ -10,33 +11,21 @@ namespace SOSkeleton
         public int attackDamage;
         public int attackCost;
 
-        public char disabledChar;
-    
-        [TextArea]
-        public string attackPattern;
+        [SerializeField] public Array2DFloat _attackPatternArray;
 
-        public List<List<char>> attackPatternList
+        public List<List<float>> AttackPatternValue
         {
             get
             {
-                // Loop over each line of the string
-                List<List<char>> attackPatternList = new List<List<char>>();
-                foreach (string line in attackPattern.Split('\n'))
-                {
-                    // Loop over each character in the line
-                    List<char> lineList = new List<char>();
-                    foreach (char c in line)
-                    {
-                        char value = c;
-                        if (value == disabledChar)
-                        {
-                            value = Manager.Game.Instance.disableChar;
-                        }
-                        lineList.Add(value);
-                    }
-                    attackPatternList.Add(lineList);
-                }
-                return attackPatternList;
+                return Utils.Maths.Get2DList<float, float>(_attackPatternArray);
+            }
+        }
+        
+        public List<List<bool>> AttackPattern
+        {
+            get
+            {
+                return Utils.Maths.Get2DList<bool, float>(_attackPatternArray, f => f > 0);
             }
         }
     }
