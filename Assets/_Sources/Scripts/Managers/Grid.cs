@@ -7,11 +7,45 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class Grid : MonoBehaviour
+namespace Manager
 {
+    public class Grid : MonoBehaviour
+{
+    #region Singleton
+    
+    public static Grid Instance;
+    
+    private void Awake()
+    {
+        if (Instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+    }
+    
+    #endregion
+
+    public int GridSize = 9;
+    public int Maximum
+    {
+        get
+        {
+            if (GridSize % 2 == 0)
+            {
+                return GridSize / 2;
+            }
+            else
+            {
+                return (GridSize - 1) / 2;
+            }
+        }
+    }
+    
     [SerializeField] private GridLayoutGroup _gridLayout;
     [SerializeField] private List<Cell> _cells = new List<Cell>();
-    private GameManager _gameManager;    
+    private Game m_Game;    
     
     [CanBeNull] public Cell HoverCell;
 
@@ -19,7 +53,7 @@ public class Grid : MonoBehaviour
 
     private void Start()
     {
-        _gameManager = GameManager.Instance;
+        m_Game = Game.Instance;
         
         _cells = GetComponentsInChildren<Cell>().ToList();
 
@@ -37,10 +71,10 @@ public class Grid : MonoBehaviour
     public void LoadMap(JSONNode json, Func<char, bool> isEnable)
     {
         JSONArray jsonArray = json["cells"].AsArray;
-        for (int y = _gameManager.Maximum+1; y > -_gameManager.Maximum; y--)
+        for (int y = Maximum+1; y > -Maximum; y--)
         {
-            string line = jsonArray[y + _gameManager.Maximum].Value;
-            int x = -_gameManager.Maximum;
+            string line = jsonArray[y + Maximum].Value;
+            int x = -Maximum;
             foreach (char c in line)
             {
                 GetCell(x, -y).IsSelectable = isEnable(c);
@@ -58,13 +92,13 @@ public class Grid : MonoBehaviour
     /// <returns></returns>
     public Cell GetCell(int x, int y)
     {
-        if (x < -_gameManager.Maximum || x > _gameManager.Maximum || y < -_gameManager.Maximum || y > _gameManager.Maximum)
+        if (x < -Maximum || x > Maximum || y < -Maximum || y > Maximum)
         {
             return null;
         }
-        x += _gameManager.Maximum; y += _gameManager.Maximum;
+        x += Maximum; y += Maximum;
         
-        return _cells[x * _gameManager.GridSize + y];
+        return _cells[x * GridSize + y];
     }
     
     public Vector2 GetCellPosition(Cell cell)
@@ -77,9 +111,10 @@ public class Grid : MonoBehaviour
 
         int cellIndex = _cells.IndexOf(cell);
         
-        int x = cellIndex / _gameManager.GridSize - _gameManager.Maximum;
-        int y = cellIndex % _gameManager.GridSize - _gameManager.Maximum;
+        int x = cellIndex / GridSize - Maximum;
+        int y = cellIndex % GridSize - Maximum;
         
         return new Vector2(x, y);
     }
+}
 }

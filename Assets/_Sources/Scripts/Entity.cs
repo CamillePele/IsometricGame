@@ -4,7 +4,7 @@ using UnityEngine.PlayerLoop;
 
 public class Entity : MonoBehaviour
 {
-    public SOEntityData entityData;
+    public SOSkeleton.EntityData entityData;
     
     private Vector2 _position;
     public Vector2 Position
@@ -22,17 +22,19 @@ public class Entity : MonoBehaviour
         get => _gameManager.currentEntityPlaying == _gameManager.entities.IndexOf(this);
     }
     
-    private GameManager _gameManager;
+    private Manager.Game _gameManager;
+    private Manager.Grid _gridManager;
 
     private void Awake()
     {
-        _gameManager = GameManager.Instance;
+        _gameManager = Manager.Game.Instance;
+        _gridManager = Manager.Grid.Instance;
         UpdatePosition();
     }
 
     public void UpdatePosition()
     {
-        if (Position.x < -_gameManager.Maximum || Position.x > _gameManager.Maximum || Position.y < -_gameManager.Maximum || Position.y > _gameManager.Maximum)
+        if (Position.x < -_gridManager.Maximum || Position.x > _gridManager.Maximum || Position.y < -_gridManager.Maximum || Position.y > _gridManager.Maximum)
         {
             Debug.LogWarning("Trying to move outside of map", this);
             return;
