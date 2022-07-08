@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
+using Array2DEditor;
 using JetBrains.Annotations;
 using UnityEngine;
 
@@ -15,25 +16,6 @@ namespace SOSkeleton
 
         public string displayName;
 
-        public List<List<bool>> layoutEditor/* = new List<List<MapCell>>()*/
-        /*{
-            new List<MapCell>() {null, null, null, null, null, null, null, null, null,},
-            new List<MapCell>() {null, null, null, null, null, null, null, null, null,},
-            new List<MapCell>() {null, null, null, null, null, null, null, null, null,},
-            new List<MapCell>() {null, null, null, null, null, null, null, null, null,},
-            new List<MapCell>() {null, null, null, null, null, null, null, null, null,},
-            new List<MapCell>() {null, null, null, null, null, null, null, null, null,},
-            new List<MapCell>() {null, null, null, null, null, null, null, null, null,},
-            new List<MapCell>() {null, null, null, null, null, null, null, null, null,},
-            new List<MapCell>() {null, null, null, null, null, null, null, null, null,},
-        }*/;
-
-        public List<Column> layout;
-        
-        [System.Serializable]
-        public class Column
-        {
-            public List<bool> cells = new List<bool>();
-        }
+        public Array2DBool layout = new Array2DBool();
     }
 }

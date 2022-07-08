@@ -48,22 +48,6 @@ namespace Manager
         {
             Grid.Instance.OnCellClicked.AddListener((v2) => print(v2));
         }
-    
-        public static List<List<char>> GetReachableCells(int range)
-        {
-            List<List<char>> result = new List<List<char>>();
-            for (int y = -range; y < range+1; y++)
-            {
-                string line = "";
-                print((2 * range + 1) - Math.Abs(y)*2);
-                line += new String(' ', Math.Abs(y));
-                line += new String('X', (2 * range + 1) - Math.Abs(y)*2);
-                line += new String(' ', Math.Abs(y));
-                
-                result.Add(line.ToList());
-            }
-    
-            return result;
-        }
+        
     }
 }

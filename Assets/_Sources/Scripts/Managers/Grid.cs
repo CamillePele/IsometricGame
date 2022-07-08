@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Array2DEditor;
 using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.Events;
@@ -82,7 +83,8 @@ namespace Manager
                 for (int y = 0; y < GridSize; y++)
                 {
                     Cell cell = GetCell(x - Maximum, y - Maximum);
-                    cell.IsSelectable = _mapData.layout[x].cells[y];
+                    print((Maximum-1)-y);
+                    cell.IsSelectable = _mapData.layout.GetCell(x, (GridSize-1)-y); // Invert y axis 
                 }
             }
             Utils.GeneralUtils.AfterXFrames(this, 1,() => {
@@ -92,18 +94,6 @@ namespace Manager
                 });
             });
             
-            // JSONArray jsonArray = json["cells"].AsArray;
-            // for (int y = Maximum+1; y > -Maximum; y--)
-            // {
-            //     string line = jsonArray[y + Maximum].Value;
-            //     int x = -Maximum;
-            //     foreach (char c in line)
-            //     {
-            //         GetCell(x, -y).IsSelectable = isEnable(c);
-            //         
-            //         x++;
-            //     }
-            // }
         }
         
         /// <summary>
@@ -123,25 +113,7 @@ namespace Manager
             
             return _cells[x * GridSize + y];
         }
-        
-        /// <summary>
-        /// Function to get the cell at the given position by gridLayoutHeight.
-        /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="gridlayoutHeight">The specific grid layout height</param>
-        /// <returns></returns>
-        // public Cell GetCellByGrid(int x, int y, GridlayoutHeight gridlayoutHeight)
-        // {
-        //     if (x < -Maximum || x > Maximum || y < -Maximum || y > Maximum)
-        //     {
-        //         return null;
-        //     }
-        //     x += Maximum; y += Maximum; // Convert to grid coordinates because the grid is offset by Maximum (eg: -4;-4)
-        //     Debug.Log(gridlayoutHeight.cells.Count);
-        //     return gridlayoutHeight.cells[x * GridSize + y];
-        // }
-        
+
         public Vector2 GetCellPosition(int index)
         {
             if (index < 0 || index >= GridSize * GridSize)
@@ -154,6 +126,22 @@ namespace Manager
             int y = index % GridSize - Maximum;
             
             return new Vector2(x, y);
+        }
+        
+        public static List<List<bool>> GetReachableCells(int range)
+        {
+            List<List<bool>> result = new List<List<bool>>();
+            for (int y = -range; y < range+1; y++)
+            {
+                string line = "";
+                line += new String(' ', Math.Abs(y));
+                line += new String('X', (2 * range + 1) - Math.Abs(y)*2);
+                line += new String(' ', Math.Abs(y));
+                
+                result.Add(line.Select(c => c == 'X').ToList());
+            }
+
+            return result;
         }
     }
 }
