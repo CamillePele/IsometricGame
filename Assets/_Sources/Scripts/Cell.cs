@@ -43,7 +43,12 @@ public class Cell : MonoBehaviour
         });
         _eventTrigger.triggers.Add(entry);
     }
-
+    
+    public void SetColor(Color color)
+    {
+        GetComponent<Image>().color = color;
+    }
+    
     public void SetHeight()
     {
         int layerMask = LayerMask.NameToLayer(Manager.Grid.Instance.mapGroundLayer);

@@ -83,7 +83,6 @@ namespace Manager
                 for (int y = 0; y < GridSize; y++)
                 {
                     Cell cell = GetCell(x - Maximum, y - Maximum);
-                    print((Maximum-1)-y);
                     cell.IsSelectable = _mapData.layout.GetCell(x, (GridSize-1)-y); // Invert y axis 
                 }
             }
@@ -93,7 +92,26 @@ namespace Manager
                     if (c.IsSelectable) c.SetHeight();
                 });
             });
-            
+
+            ShowLayout(GetReachableCells(3), Vector2Int.zero, new Vector2Int(3, 3));
+        }
+
+        /// <summary>
+        /// Function do displaye layout over the grid
+        /// </summary>
+        /// <param name="layout">Cell to show</param>
+        /// <param name="position">Position to show on the grid</param>
+        /// <param name="pivot">Center of the layout</param>
+        public void ShowLayout(List<List<bool>> layout, Vector2Int position, Vector2Int pivot)
+        {
+            for (int x = 0; x < layout.Count; x++)
+            {
+                for (int y = 0; y < layout[x].Count; y++)
+                {
+                    if (x - pivot.x == 0 && y - pivot.y == 0) continue;
+                    if (layout[x][y]) GetCell(position.x + x - pivot.x,position.y + y - pivot.y).SetColor(Color.red);
+                }
+            }
         }
         
         /// <summary>
