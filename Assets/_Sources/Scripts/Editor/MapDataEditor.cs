@@ -16,6 +16,8 @@ namespace Editor
         
         
         public override void OnInspectorGUI() {
+            // base.OnInspectorGUI();
+            
             SOSkeleton.MapData map = (SOSkeleton.MapData)target;
 
             EditorGUILayout.Space();
@@ -23,7 +25,32 @@ namespace Editor
             showLayout = EditorGUILayout.Foldout(showLayout, "Map ("+map.Size+")");
             if (showLayout) {
                 EditorGUI.indentLevel = 0;
-
+                
+                if (map.layout == null) {
+                    map.layout = new List<SOSkeleton.MapData.Column>();
+                    for (int x = 0; x < map.Size; x++)
+                    {
+                        map.layout.Add(new SOSkeleton.MapData.Column());
+                        for (int y = 0; y < map.Size; y++)
+                        {
+                            map.layout[x].cells.Add(new SOSkeleton.MapData.MapCell(_heightDefault));
+                        }
+                    }
+                }
+                
+                if (map.layoutEditor == null)
+                {
+                    map.layoutEditor = new List<List<SOSkeleton.MapData.MapCell>>();
+                    for (int x = 0; x < map.layout.Count; x++)
+                    {
+                        map.layoutEditor.Add(new List<SOSkeleton.MapData.MapCell>());
+                        for (int y = 0; y < map.layout[x].cells.Count; y++)
+                        {
+                            map.layoutEditor[x].Add(map.layout[x].cells[y]);
+                        }
+                    }
+                }
+                
                 #region Styles
 
                 GUIStyle tableStyle = new GUIStyle ("box"); // General table style
@@ -90,12 +117,14 @@ namespace Editor
                     heightStrings.Add(height.ToString());
                 }
                 
+                if (map.layoutEditor == null) map.layoutEditor = new List<List<SOSkeleton.MapData.MapCell>>();
+
                 EditorGUILayout.BeginHorizontal(tableStyle);
                 for (int x = -1; x < map.Size; x++) {
                     EditorGUILayout.BeginVertical ((x == -1) ? headerColumnStyle : columnStyle);
                     
-                    if (x >= 0 && map.mapLayout.Count <= x+1) {
-                        map.mapLayout.Add(new List<SOSkeleton.MapData.MapCell>());
+                    if (x >= 0 && map.layoutEditor.Count <= x) {
+                        map.layoutEditor.Add(new List<SOSkeleton.MapData.MapCell>());
                     }
                     
                     for (int y = -1; y < map.Size; y++)
@@ -114,15 +143,15 @@ namespace Editor
                             EditorGUILayout.EndHorizontal();
                         }
 
-                        if (y >= 0 && x >= 0 && map.mapLayout[x].Count <= y+1) {
-                            map.mapLayout[x].Add(null);
+                        if (y >= 0 && x >= 0 && map.layoutEditor[x].Count <= y) {
+                            map.layoutEditor[x].Add(null);
                         }
                         
                         if (x >= 0 && y >= 0) {
                             EditorGUILayout.BeginHorizontal(rowStyle);
 
-                            if (map.mapLayout[x][y] != null) {
-                                int indexOld = heights.IndexOf(map.mapLayout[x][y].height) + 1;
+                            if (map.layoutEditor[x][y].enabled) {
+                                int indexOld = heights.IndexOf(map.layoutEditor[x][y].height) + 1;
                                 
                                 int index = EditorGUILayout.Popup(
                                     indexOld,
@@ -130,15 +159,18 @@ namespace Editor
                                     popupStyle);
                             
                                 if (index == 0) {
-                                    map.mapLayout[x][y] = null;
+                                    map.layoutEditor[x][y].enabled = false;
                                 } else if (index-1 > 0) {
-                                    map.mapLayout[x][y].height = heights[index-1];
+                                    if (indexOld != index) {
+                                        map.layoutEditor[x][y].height = heights[index-1];
+                                    }
                                 }
                             }
                             else {
                                 bool empty = EditorGUILayout.Toggle(false, toggleStyle);
                                 if (empty) {
-                                    map.mapLayout[x][y] = new SOSkeleton.MapData.MapCell(_heightDefault);
+                                    map.layoutEditor[x][y].enabled = true;
+                                    map.layoutEditor[x][y].height = _heightDefault;
                                 }
                             }
                             

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
-using SimpleJSON;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -43,43 +42,78 @@ namespace Manager
             }
         }
         
-        [SerializeField] private SOSkeleton.MapData _mapData;
-        [SerializeField] private GridLayoutGroup _gridLayout;
-        [SerializeField] private List<Cell> _cells = new List<Cell>();
+        [Serializable]
+        public class GridlayoutHeight
+        {
+            public float height;
+            public GridLayoutGroup gridLayoutGroup;
+            public List<Cell> cells;
+        }
         
+        [SerializeField] private SOSkeleton.MapData _mapData;
+        [SerializeField] private List<GridlayoutHeight> _gridLayouts;
+
         [CanBeNull] public Cell HoverCell;
 
         public UnityEvent<Vector2> OnCellClicked = new UnityEvent<Vector2>();
 
         private void Start()
         {
-            _cells = GetComponentsInChildren<Cell>().ToList();
-
-            _cells.ForEach(c =>
+            _gridLayouts.ForEach(g =>
             {
-                c.coordinates = GetCellPosition(c);
+                g.cells = g.gridLayoutGroup.GetComponentsInChildren<Cell>().ToList();
                 
-                c.OnHover.AddListener(() => HoverCell = c);
-                c.OnUnhover.AddListener(() => HoverCell = null);
+                int index = 0;
+                g.cells.ForEach(c =>
+                {
+                    int i = index;
+
+                    c.coordinates = GetCellPosition(i);
                 
-                c.OnClick.AddListener(() => OnCellClicked.Invoke(GetCellPosition(c)));
+                    c.OnHover.AddListener(() => HoverCell = c);
+                    c.OnUnhover.AddListener(() => HoverCell = null);
+
+                    c.OnClick.AddListener(() => OnCellClicked.Invoke(GetCellPosition(i)));
+                    
+                    index++;
+                });
             });
+            
         }
 
-        public void LoadMap(JSONNode json, Func<char, bool> isEnable)
+        public void LoadMap()
         {
-            JSONArray jsonArray = json["cells"].AsArray;
-            for (int y = Maximum+1; y > -Maximum; y--)
+            for (int x = 0; x < GridSize; x++)
             {
-                string line = jsonArray[y + Maximum].Value;
-                int x = -Maximum;
-                foreach (char c in line)
+                for (int y = 0; y < GridSize; y++)
                 {
-                    GetCell(x, -y).IsSelectable = isEnable(c);
-                    
-                    x++;
+                    SOSkeleton.MapData.MapCell cell = _mapData.layout[x].cells[y];
+                    foreach (var gridlayoutHeight in _gridLayouts)
+                    {
+                        if (cell != null && cell.height == gridlayoutHeight.height)
+                        {
+                            GetCell(x - Maximum, y - Maximum).IsSelectable = true;
+                        }
+                        else
+                        {
+                            GetCellByGrid(x - Maximum, y - Maximum, gridlayoutHeight).IsSelectable = false;
+                        }
+                    }
                 }
             }
+            
+            // JSONArray jsonArray = json["cells"].AsArray;
+            // for (int y = Maximum+1; y > -Maximum; y--)
+            // {
+            //     string line = jsonArray[y + Maximum].Value;
+            //     int x = -Maximum;
+            //     foreach (char c in line)
+            //     {
+            //         GetCell(x, -y).IsSelectable = isEnable(c);
+            //         
+            //         x++;
+            //     }
+            // }
         }
         
         /// <summary>
@@ -94,23 +128,47 @@ namespace Manager
             {
                 return null;
             }
-            x += Maximum; y += Maximum;
+            x += Maximum; y += Maximum; // Convert to grid coordinates because the grid is offset by Maximum (eg: -4;-4)
             
-            return _cells[x * GridSize + y];
+            float height = _mapData.layout[x].cells[y].height;
+            
+            GridlayoutHeight gridlayoutHeight = _gridLayouts.FirstOrDefault(g => g.height == height);
+            if (gridlayoutHeight == null) // If no gridlayoutHeight found for the given height, return null
+            {
+                return null;
+            }
+            
+            return gridlayoutHeight.cells[x * GridSize + y];
         }
         
-        public Vector2 GetCellPosition(Cell cell)
+        /// <summary>
+        /// Function to get the cell at the given position by gridLayoutHeight.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="gridlayoutHeight">The specific grid layout height</param>
+        /// <returns></returns>
+        public Cell GetCellByGrid(int x, int y, GridlayoutHeight gridlayoutHeight)
         {
-            if (_cells.Contains(cell) == false)
+            if (x < -Maximum || x > Maximum || y < -Maximum || y > Maximum)
             {
-                Debug.LogWarning("Cell is not in the grid", cell);
+                return null;
+            }
+            x += Maximum; y += Maximum; // Convert to grid coordinates because the grid is offset by Maximum (eg: -4;-4)
+
+            return gridlayoutHeight.cells[x * GridSize + y];
+        }
+        
+        public Vector2 GetCellPosition(int index)
+        {
+            if (index < 0 || index >= GridSize * GridSize)
+            {
+                Debug.LogWarning("Cell "+index+" is not in the grid");
                 return Vector2.zero;
             }
-
-            int cellIndex = _cells.IndexOf(cell);
             
-            int x = cellIndex / GridSize - Maximum;
-            int y = cellIndex % GridSize - Maximum;
+            int x = index / GridSize - Maximum;
+            int y = index % GridSize - Maximum;
             
             return new Vector2(x, y);
         }

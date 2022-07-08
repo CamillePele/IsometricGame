@@ -46,8 +46,7 @@ namespace Manager
         
         public void LoadMap(JSONNode json)
         {
-            //                 if char is not disableChar, tile is interactable
-            Grid.Instance.LoadMap(json, c => c != disableChar);
+            Grid.Instance.LoadMap();
             
             Grid.Instance.OnCellClicked.AddListener((v2) => print(v2));
         }
