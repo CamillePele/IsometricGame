@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SOSkeleton;
 using UnityEditor;
 using UnityEngine;
 
@@ -33,17 +34,17 @@ namespace Editor
                         map.layout.Add(new SOSkeleton.MapData.Column());
                         for (int y = 0; y < map.Size; y++)
                         {
-                            map.layout[x].cells.Add(new SOSkeleton.MapData.MapCell(_heightDefault));
+                            map.layout[x].cells.Add(true);
                         }
                     }
                 }
                 
                 if (map.layoutEditor == null)
                 {
-                    map.layoutEditor = new List<List<SOSkeleton.MapData.MapCell>>();
+                    map.layoutEditor = new List<List<bool>>();
                     for (int x = 0; x < map.layout.Count; x++)
                     {
-                        map.layoutEditor.Add(new List<SOSkeleton.MapData.MapCell>());
+                        map.layoutEditor.Add(new List<bool>());
                         for (int y = 0; y < map.layout[x].cells.Count; y++)
                         {
                             map.layoutEditor[x].Add(map.layout[x].cells[y]);
@@ -61,17 +62,17 @@ namespace Editor
                 headerColumnStyle.fixedWidth = 35;
 
                 GUIStyle columnStyle = new GUIStyle(); // Style for columns
-                columnStyle.fixedWidth = 40;
+                columnStyle.fixedWidth = 20;
 
                 GUIStyle rowStyle = new GUIStyle(); // Style for rows
-                rowStyle.fixedHeight = 40;
+                rowStyle.fixedHeight = 20;
 
                 GUIStyle rowHeaderStyle = new GUIStyle(); // Style for row headers indecators
                 rowHeaderStyle.fixedWidth = columnStyle.fixedWidth - 1;
 
                 GUIStyle columnHeaderStyle = new GUIStyle(); // Style for column headers indecators
-                columnHeaderStyle.fixedWidth = 40;
-                columnHeaderStyle.fixedHeight = 40;
+                columnHeaderStyle.fixedWidth = 20;
+                columnHeaderStyle.fixedHeight = 20;
 
                 GUIStyle columnLabelStyle = new GUIStyle(); // Style for column labels
                 columnLabelStyle.fixedWidth = rowHeaderStyle.fixedWidth - 6;
@@ -117,7 +118,7 @@ namespace Editor
                     heightStrings.Add(height.ToString());
                 }
                 
-                if (map.layoutEditor == null) map.layoutEditor = new List<List<SOSkeleton.MapData.MapCell>>();
+                if (map.layoutEditor == null) map.layoutEditor = new List<List<bool>>();
 
                 EditorGUILayout.BeginHorizontal(tableStyle);
                 for (int x = -1; x < map.Size; x++) {
@@ -144,28 +145,12 @@ namespace Editor
 
                             int yPos = (map.Size-1) - y; // Invert y axis
                             
-                            if (map.layoutEditor[x][yPos].enabled) {
-                                int indexOld = heights.IndexOf(map.layoutEditor[x][yPos].height) + 1;
-                                
-                                int index = EditorGUILayout.Popup(
-                                    indexOld,
-                                    heightStrings.ToArray(),
-                                    popupStyle);
-                            
-                                if (index == 0) {
-                                    map.layoutEditor[x][yPos].enabled = false;
-                                } else if (index-1 > 0) {
-                                    if (indexOld != index) {
-                                        map.layoutEditor[x][yPos].height = heights[index-1];
-                                    }
-                                }
-                            }
-                            else {
-                                bool empty = EditorGUILayout.Toggle(false, toggleStyle);
-                                if (empty) {
-                                    map.layoutEditor[x][yPos].enabled = true;
-                                    map.layoutEditor[x][yPos].height = _heightDefault;
-                                }
+                            bool oldValue = map.layoutEditor[x][yPos];
+                            map.layoutEditor[x][yPos] = EditorGUILayout.Toggle(oldValue, toggleStyle);
+                            if (oldValue != map.layoutEditor[x][yPos])
+                            {
+                                map.layout[x].cells[yPos] = map.layoutEditor[x][yPos];
+                                EditorUtility.SetDirty(map);
                             }
                             
                             EditorGUILayout.EndHorizontal();
@@ -174,6 +159,23 @@ namespace Editor
                     EditorGUILayout.EndVertical();
                 }
                 EditorGUILayout.EndHorizontal();
+            }
+            if (GUILayout.Button("Sync"))
+            {
+                Save(map);
+            }
+        }
+
+        public void Save(MapData map)
+        {
+            map.layout = new List<MapData.Column>();
+            foreach (List<bool> column in map.layoutEditor)
+            {
+                map.layout.Add(new MapData.Column());
+                foreach (bool cell in column)
+                {
+                    map.layout[map.layout.Count - 1].cells.Add(cell);
+                }
             }
         }
     }

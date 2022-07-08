@@ -11,23 +11,11 @@ namespace SOSkeleton
     {
         public int Size { get => Manager.Grid.GridSize; }
         public int Maximum { get => Manager.Grid.Maximum; }
-
-        [System.Serializable] [DefaultValue(null)]
-        public class MapCell
-        {
-            public float height;
-            public bool enabled;
-            
-            public MapCell(float height)
-            {
-                this.height = height;
-                enabled = false;
-            }
-        }
+        
 
         public string displayName;
 
-        public List<List<MapCell>> layoutEditor/* = new List<List<MapCell>>()*/
+        public List<List<bool>> layoutEditor/* = new List<List<MapCell>>()*/
         /*{
             new List<MapCell>() {null, null, null, null, null, null, null, null, null,},
             new List<MapCell>() {null, null, null, null, null, null, null, null, null,},
@@ -45,7 +33,7 @@ namespace SOSkeleton
         [System.Serializable]
         public class Column
         {
-            public List<MapCell> cells = new List<MapCell>();
+            public List<bool> cells = new List<bool>();
         }
     }
 }

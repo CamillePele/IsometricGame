@@ -26,6 +26,8 @@ namespace Manager
         
         #endregion
 
+        [SerializeField] public string mapGroundLayer = "MapGround";
+        
         public static int GridSize = 9;
         public static int Maximum
         {
@@ -42,16 +44,10 @@ namespace Manager
             }
         }
         
-        [Serializable]
-        public class GridlayoutHeight
-        {
-            public float height;
-            public GridLayoutGroup gridLayoutGroup;
-            public List<Cell> cells;
-        }
         
         [SerializeField] private SOSkeleton.MapData _mapData;
-        [SerializeField] private List<GridlayoutHeight> _gridLayouts;
+        [SerializeField] private GridLayoutGroup _gridLayout;
+        [SerializeField] private List<Cell> _cells;
 
         [CanBeNull] public Cell HoverCell;
 
@@ -59,26 +55,23 @@ namespace Manager
 
         private void Start()
         {
-            _gridLayouts.ForEach(g =>
-            {
-                g.cells = g.gridLayoutGroup.GetComponentsInChildren<Cell>().ToList();
-                
-                int index = 0;
-                g.cells.ForEach(c =>
-                {
-                    int i = index;
-
-                    c.coordinates = GetCellPosition(i);
-                
-                    c.OnHover.AddListener(() => HoverCell = c);
-                    c.OnUnhover.AddListener(() => HoverCell = null);
-
-                    c.OnClick.AddListener(() => OnCellClicked.Invoke(GetCellPosition(i)));
-                    
-                    index++;
-                });
-            });
+            _cells = _gridLayout.GetComponentsInChildren<Cell>().ToList();
             
+            int index = 0;
+            _cells.ForEach(c =>
+            {
+                int i = index;
+                
+                c.coordinates = GetCellPosition(i);
+            
+                c.OnHover.AddListener(() => HoverCell = c);
+                c.OnUnhover.AddListener(() => HoverCell = null);
+
+                c.OnClick.AddListener(() => OnCellClicked.Invoke(GetCellPosition(i)));
+                
+                index++;
+            });
+
             LoadMap();
         }
 
@@ -88,20 +81,16 @@ namespace Manager
             {
                 for (int y = 0; y < GridSize; y++)
                 {
-                    SOSkeleton.MapData.MapCell cell = _mapData.layout[x].cells[y];
-                    foreach (var gridlayoutHeight in _gridLayouts)
-                    {
-                        if (cell.enabled == true && cell.height == gridlayoutHeight.height)
-                        {
-                            GetCell(x - Maximum, y - Maximum).IsSelectable = true;
-                        }
-                        else
-                        {
-                            GetCellByGrid(x - Maximum, y - Maximum, gridlayoutHeight).IsSelectable = false;
-                        }
-                    }
+                    Cell cell = GetCell(x - Maximum, y - Maximum);
+                    cell.IsSelectable = _mapData.layout[x].cells[y];
                 }
             }
+            Utils.GeneralUtils.AfterXFrames(this, 1,() => {
+                _cells.ForEach(c =>
+                {
+                    if (c.IsSelectable) c.SetHeight();
+                });
+            });
             
             // JSONArray jsonArray = json["cells"].AsArray;
             // for (int y = Maximum+1; y > -Maximum; y--)
@@ -131,15 +120,8 @@ namespace Manager
             }
             x += Maximum; y += Maximum; // Convert to grid coordinates because the grid is offset by Maximum (eg: -4;-4)
             
-            float height = _mapData.layout[x].cells[y].height;
             
-            GridlayoutHeight gridlayoutHeight = _gridLayouts.FirstOrDefault(g => g.height == height);
-            if (gridlayoutHeight == null) // If no gridlayoutHeight found for the given height, return null
-            {
-                return null;
-            }
-            
-            return gridlayoutHeight.cells[x * GridSize + y];
+            return _cells[x * GridSize + y];
         }
         
         /// <summary>
@@ -149,16 +131,16 @@ namespace Manager
         /// <param name="y"></param>
         /// <param name="gridlayoutHeight">The specific grid layout height</param>
         /// <returns></returns>
-        public Cell GetCellByGrid(int x, int y, GridlayoutHeight gridlayoutHeight)
-        {
-            if (x < -Maximum || x > Maximum || y < -Maximum || y > Maximum)
-            {
-                return null;
-            }
-            x += Maximum; y += Maximum; // Convert to grid coordinates because the grid is offset by Maximum (eg: -4;-4)
-            Debug.Log(gridlayoutHeight.cells.Count);
-            return gridlayoutHeight.cells[x * GridSize + y];
-        }
+        // public Cell GetCellByGrid(int x, int y, GridlayoutHeight gridlayoutHeight)
+        // {
+        //     if (x < -Maximum || x > Maximum || y < -Maximum || y > Maximum)
+        //     {
+        //         return null;
+        //     }
+        //     x += Maximum; y += Maximum; // Convert to grid coordinates because the grid is offset by Maximum (eg: -4;-4)
+        //     Debug.Log(gridlayoutHeight.cells.Count);
+        //     return gridlayoutHeight.cells[x * GridSize + y];
+        // }
         
         public Vector2 GetCellPosition(int index)
         {
