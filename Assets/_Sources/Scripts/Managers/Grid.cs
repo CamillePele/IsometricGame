@@ -83,7 +83,7 @@ namespace Manager
             LoadMap();
 
             var path = Pathfinding.FindPath(GridData, new Vector2Int(-3 + Maximum, -3 + Maximum), 
-                new Vector2Int(3 + Maximum, 3 + Maximum), Direction.South, true);
+                new Vector2Int(3 + Maximum, 3 + Maximum), Direction.West, true);
             
             path.ForEach(v =>
             {
@@ -214,8 +214,8 @@ namespace Manager
                 return Vector2.zero;
             }
             
-            int x = index / GridSize - Maximum;
-            int y = index % GridSize - Maximum;
+            int x = index % GridSize - Maximum;
+            int y = index / GridSize - Maximum;
             
             return new Vector2(x, y);
         }

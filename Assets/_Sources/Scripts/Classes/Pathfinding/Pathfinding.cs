@@ -27,33 +27,36 @@ namespace Classes.Pathfinding
 
             while (openList.Count > 0)
             {
-                // Todo : To find the best path, we need to find the best path node in the open list.
+                // Get the node with the lowest F cost and the lowest Hcost, and direction
+                var orderedEnumerable = openList.OrderBy(node => node.FCost)
+                    .ThenBy(node => node.hCost);
+                
+                // TODO : Fix clock wise direction, for the moment it's not clockwise
                 int directionsCount = Enum.GetNames(typeof(Manager.Grid.Direction)).Length;
-                for (int i = 1; i < directionsCount + 1; i++)
+                for (int i = 0; i < directionsCount; i++)
                 {
                     Manager.Grid.Direction tempDirection = (Manager.Grid.Direction) (((int) direction + i) % directionsCount);
-                    Debug.Log(((Manager.Grid.Direction) tempDirection).ToString());
+                    // Debug.Log(((Manager.Grid.Direction) tempDirection).ToString());
                     
                     if (tempDirection == Manager.Grid.Direction.North)
                     {
-                        openList = openList.OrderBy(n => n.position.x).ToList();
+                        orderedEnumerable = orderedEnumerable.ThenBy(n => n.position.x);
                     }
                     else if (tempDirection == Manager.Grid.Direction.South)
                     {
-                        openList = openList.OrderByDescending(n => n.position.y).ToList();
+                        orderedEnumerable = orderedEnumerable.ThenByDescending(n => n.position.y);
                     }
                     else if (tempDirection == Manager.Grid.Direction.East)
                     {
-                        openList = openList.OrderBy(n => n.position.y).ToList();
+                        orderedEnumerable = orderedEnumerable.ThenBy(n => n.position.y);
                     }
                     else if (tempDirection == Manager.Grid.Direction.West)
                     {
-                        openList = openList.OrderByDescending(n => n.position.x).ToList();
+                        orderedEnumerable = orderedEnumerable.ThenByDescending(n => n.position.x);
                     }
                 }
-                // Get the node with the lowest F cost and the lowest Hcost, and direction
-                openList = openList.OrderBy(node => node.FCost).OrderBy(node => node.hCost).ToList();
-                
+                openList = orderedEnumerable.ToList();
+
                 PathNode currentNode = openList[0];
 
                 if (debug)
