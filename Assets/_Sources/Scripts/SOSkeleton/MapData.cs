@@ -15,13 +15,13 @@ namespace SOSkeleton
         public string displayName;
 
         // -1 = void; 0 = cell; 1 = wall
-        [SerializeField] private Array2DInt _layoutArray = new Array2DInt();
+        public Array2DInt layoutArray = new Array2DInt();
 
         public List<List<int>> Layout
         {
             get
             {
-                return Utils.Maths.Get2DList<int, int>(_layoutArray);
+                return Utils.Maths.Get2DList<int, int>(layoutArray);
             }
         }
     }

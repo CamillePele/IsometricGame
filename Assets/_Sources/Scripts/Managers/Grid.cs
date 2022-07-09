@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Array2DEditor;
+using Classes.Pathfinding;
+using Companion.Cell;
 using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.Events;
@@ -44,7 +46,11 @@ namespace Manager
                 }
             }
         }
-        
+
+        public List<List<bool>> GridData
+        {
+            get { return Utils.Maths.Get2DList(_mapData.layoutArray, i => i == 0); }
+        }
         
         [SerializeField] private SOSkeleton.MapData _mapData;
         [SerializeField] private GridLayoutGroup _gridLayout;
@@ -52,14 +58,12 @@ namespace Manager
 
         public enum Direction
         {
-            North,
-            East,
-            South,
-            West
+            North = 0,
+            East = 1,
+            South = 2,
+            West = 3
         }
-        
-        [SerializeField] private SOSkeleton.Attack _attackTemp; // TODO: remove this
-        
+
         [CanBeNull] public Cell HoverCell;
 
         public UnityEvent<Vector2> OnCellClicked = new UnityEvent<Vector2>();
@@ -68,22 +72,27 @@ namespace Manager
         {
             _cells = _gridLayout.GetComponentsInChildren<Cell>().ToList();
             
-            int index = 0;
             _cells.ForEach(c =>
             {
-                int i = index;
-                
-                c.coordinates = GetCellPosition(i);
-            
                 c.OnHover.AddListener(() => HoverCell = c);
                 c.OnUnhover.AddListener(() => HoverCell = null);
 
-                c.OnClick.AddListener(() => OnCellClicked.Invoke(GetCellPosition(i)));
-                
-                index++;
+                c.OnClick.AddListener(() => OnCellClicked.Invoke(GetCellPosition(c)));
             });
 
             LoadMap();
+
+            var path = Pathfinding.FindPath(GridData, new Vector2Int(-3 + Maximum, -3 + Maximum), 
+                new Vector2Int(3 + Maximum, 3 + Maximum), Direction.South, true);
+            
+            path.ForEach(v =>
+            {
+                Cell cell = GetCell(v, true);
+                if (cell != null)
+                {
+                    cell.SetColor(Color.yellow);
+                }
+            });
         }
 
         public void LoadMap()
@@ -103,7 +112,7 @@ namespace Manager
                 });
             });
 
-            ShowLayout(_attackTemp.AttackPattern, Vector2Int.zero, new Vector2Int(1, 0), Direction.North, Color.red);
+            // ShowLayout(_attackTemp.AttackPattern, Vector2Int.zero, new Vector2Int(1, 0), Direction.North, Color.red);
         }
 
         /// <summary>
@@ -184,6 +193,18 @@ namespace Manager
             
             return _cells[x + y * GridSize];
         }
+        /// <summary>
+        /// Surcharge of GetCell to get the cell at the given position.
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="convert">True to convert from 0 -> max to -max/2 -> max/2</param>
+        /// <returns></returns>
+        public Cell GetCell(Vector2Int position, bool convert = false)
+        {
+            position = position - new Vector2Int(Maximum, Maximum); // Convert to grid coordinates because the grid is offset by Maximum (eg: -4;-4)
+            return GetCell(position.x, position.y);
+        }
+
 
         public Vector2 GetCellPosition(int index)
         {
@@ -198,7 +219,11 @@ namespace Manager
             
             return new Vector2(x, y);
         }
-        
+        public Vector2 GetCellPosition(Cell cell)
+        {
+            return GetCellPosition(cell.transform.GetSiblingIndex());
+        }
+
         public static List<List<bool>> GetReachableCells(int range)
         {
             List<List<bool>> result = new List<List<bool>>();
