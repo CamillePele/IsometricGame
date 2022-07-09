@@ -14,13 +14,14 @@ namespace SOSkeleton
 
         public string displayName;
 
-        [SerializeField] private Array2DBool _layoutArray = new Array2DBool();
+        // -1 = void; 0 = cell; 1 = wall
+        [SerializeField] private Array2DInt _layoutArray = new Array2DInt();
 
-        public List<List<bool>> Layout
+        public List<List<int>> Layout
         {
             get
             {
-                return Utils.Maths.Get2DList<bool, bool>(_layoutArray);
+                return Utils.Maths.Get2DList<int, int>(_layoutArray);
             }
         }
     }

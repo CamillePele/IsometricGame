@@ -93,7 +93,7 @@ namespace Manager
                 for (int y = 0; y < GridSize; y++)
                 {
                     Cell cell = GetCell(x - Maximum, y - Maximum);
-                    cell.IsSelectable = _mapData.Layout[x][y]; 
+                    cell.IsSelectable = _mapData.Layout[x][y] == 0; 
                 }
             }
             Utils.GeneralUtils.AfterXFrames(this, 1,() => {
@@ -103,7 +103,7 @@ namespace Manager
                 });
             });
 
-            ShowLayout(_attackTemp.AttackPattern, Vector2Int.zero, new Vector2Int(1, 0), Direction.East, Color.red);
+            ShowLayout(_attackTemp.AttackPattern, Vector2Int.zero, new Vector2Int(1, 0), Direction.North, Color.red);
         }
 
         /// <summary>
@@ -182,7 +182,7 @@ namespace Manager
             x += Maximum; y += Maximum; // Convert to grid coordinates because the grid is offset by Maximum (eg: -4;-4)
             
             
-            return _cells[x * GridSize + y];
+            return _cells[x + y * GridSize];
         }
 
         public Vector2 GetCellPosition(int index)
