@@ -50,10 +50,10 @@ namespace Manager
 
         public List<List<bool>> GridData
         {
-            get { return Utils.Maths.Get2DList(_mapData.layoutArray, i => i == 0); }
+            get { return Utils.Maths.Get2DList(mapData.layoutArray, i => i == 0); }
         }
         
-        [SerializeField] private SOSkeleton.MapData _mapData;
+        [SerializeField] public SOSkeleton.MapData mapData;
         [SerializeField] private GridLayoutGroup _gridLayout;
         [SerializeField] private List<Cell> _cells;
 
@@ -65,8 +65,8 @@ namespace Manager
             West = 3
         }
 
-        [CanBeNull] public Cell HoverCell;
-
+        private Vector2Int? _currentHoverdCell;
+        public UnityEvent<Vector2Int?> OnHoverPositionChanged;
         public UnityEvent<Vector2Int> OnCellClicked = new UnityEvent<Vector2Int>();
 
         private void Init()
@@ -75,8 +75,12 @@ namespace Manager
             
             _cells.ForEach(c =>
             {
-                c.OnHover.AddListener(() => HoverCell = c);
-                c.OnUnhover.AddListener(() => HoverCell = null);
+                c.OnHover.AddListener(() =>
+                {
+                    if (_currentHoverdCell == c.Position) return;
+                    OnHoverPositionChanged.Invoke(c.Position);
+                });
+                c.OnUnhover.AddListener(() => OnHoverPositionChanged.Invoke(null));
 
                 c.OnClick.AddListener(() =>
                 {
@@ -95,7 +99,7 @@ namespace Manager
                 for (int y = 0; y < GridSize; y++)
                 {
                     Cell cell = GetCell(x, y);
-                    cell.IsSelectable = _mapData.Layout[x][y] == 0; 
+                    cell.IsSelectable = mapData.Layout[x][y] == 0; 
                 }
             }
             Utils.GeneralUtils.AfterXFrames(this, 1,() => {
@@ -114,8 +118,9 @@ namespace Manager
         /// <param name="layout">Cell to show</param>
         /// <param name="position">Position to show on the grid</param>
         /// <param name="pivot">Center of the layout</param>
-        public void ShowLayout(List<List<bool>> layout, Vector2Int position, Vector2Int pivot, Direction direction, Color color)
+        public List<Vector2Int> GetCellsByLayout(List<List<bool>> layout, Vector2Int position, Vector2Int pivot, Direction direction)
         {
+            List<Vector2Int> cells = new List<Vector2Int>();
             for (int x = 0; x < layout.Count; x++)
             {
                 for (int y = 0; y < layout[x].Count; y++)
@@ -164,11 +169,17 @@ namespace Manager
                         }
                     }
                     //          Offset by the position of the grid    Substract the pivot to get the position of the layout in the grid
-                    Cell cell = GetCell(position.x + xPos - newPivot.x, position.y + yPos - newPivot.y);
+                    Vector2Int cellPos = new Vector2Int(position.x + xPos - newPivot.x, position.y + yPos - newPivot.y);
+                    Cell cell = GetCell(cellPos.x, cellPos.y);
                     if (cell == null || !cell.IsSelectable) continue;
-                    if (newLayout[xPos][yPos]) cell.SetColor(color);
+                    if (newLayout[xPos][yPos])
+                    {
+                        cells.Add(cellPos);
+                    }
                 }
             }
+
+            return cells;
         }
         
         /// <summary>
@@ -179,11 +190,11 @@ namespace Manager
         /// <returns></returns>
         public Cell GetCell(int x, int y)
         {
-            if (x < 0 || x > GridSize || y < 0 || y > GridSize)
+            if (x < 0 || x > GridSize-1 || y < 0 || y > GridSize-1)
             {
                 return null;
             }
-            print($"GetCell at {x}, {y}: {x + y * GridSize}");
+            // print($"GetCell at {x}, {y}: {x + y * GridSize}");
             
             return _cells[x + y * GridSize];
         }
@@ -257,6 +268,30 @@ namespace Manager
                 });
             if (path == null) return -1;
             return path.Count;
+        }
+        
+        public Direction? GetDirection(Vector2Int a, Vector2Int b)
+        {
+            Vector2Int diff = b - a;
+            
+            if (diff.y > 0 && diff.y > Mathf.Abs(diff.x))
+            {
+                return Direction.North;
+            }
+            if (diff.y < 0 && Mathf.Abs(diff.y) > Mathf.Abs(diff.x))
+            {
+                return Direction.South;
+            }
+            if (diff.x > 0 && diff.x > Mathf.Abs(diff.y))
+            {
+                return Direction.East;
+            }
+            if (diff.x < 0 && Mathf.Abs(diff.x) > Mathf.Abs(diff.y))
+            {
+                return Direction.West;
+            }
+
+            return null; // TODO: Handle diagonal movement
         }
     }
 }

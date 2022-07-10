@@ -7,6 +7,6 @@ namespace SOSkeleton
     public class EntityData : ScriptableObject
     {
         public int PM;
-        List<Attack> attacks = new List<Attack>();
+        public List<AttackData> attacks = new List<AttackData>();
     }
 }

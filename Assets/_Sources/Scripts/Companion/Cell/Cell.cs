@@ -33,7 +33,7 @@ namespace Companion.Cell
          [SerializeField] private TextMeshProUGUI _gCost;
          [SerializeField] private TextMeshProUGUI _hCost;
 
-         public Vector2 Coordinates
+         public Vector2Int Position
          {
              get => Manager.Grid.Instance.GetCellPosition(this);
          }
@@ -44,8 +44,8 @@ namespace Companion.Cell
      
          public bool IsSelectable
          {
-             get => GetComponent<Image>().enabled;
-             set => GetComponent<Image>().enabled = value;
+             get => GetComponentInChildren<Image>().enabled;
+             set => GetComponentInChildren<Image>().enabled = value;
          }
          
          private void Awake()
@@ -74,7 +74,15 @@ namespace Companion.Cell
          
          public void SetColor(Color color)
          {
-             GetComponent<Image>().color = color;
+             GetComponentInChildren<Image>().color = color;
+         }
+         
+         public void Clear()
+         {
+             _fCost.text = "";
+             _gCost.text = "";
+             _hCost.text = "";
+             SetColor(Color.white); // TODO : made a color variable
          }
          
          public void SetHeight()

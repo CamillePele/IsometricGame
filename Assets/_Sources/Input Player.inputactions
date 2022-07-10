@@ -1,0 +1,74 @@
+{
+    "name": "Input Player",
+    "maps": [
+        {
+            "name": "Gameplay",
+            "id": "d3f3fa52-53a2-4ab4-867e-b42afd104feb",
+            "actions": [
+                {
+                    "name": "Attack Selection Next",
+                    "type": "Button",
+                    "id": "29c54fef-52fd-476e-8790-81df97858c44",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Attack Selection Previous",
+                    "type": "Button",
+                    "id": "4bcbd383-dcd6-4f2c-8461-ecebb2c9bf8f",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Next Round",
+                    "type": "Button",
+                    "id": "32c596c4-0615-4dce-88aa-cca4f2aa7a4b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "df36df30-d381-45f3-8769-73931b2ae092",
+                    "path": "<Keyboard>/rightArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Attack Selection Next",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6dc5fe9a-67f1-4fe5-a436-4ddbd1572b32",
+                    "path": "<Keyboard>/leftArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Attack Selection Previous",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0fa9c578-931a-48cf-838b-bded2cdc7e61",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Next Round",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SimpleJSON;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 
 namespace Manager
@@ -43,7 +44,33 @@ namespace Manager
             
             entities[currentEntityPlaying].StartTurn();
         }
+
+        #region Inputs
+
+        public void OnSelectNextAttack(InputAction.CallbackContext ctx)
+        {
+            if (ctx.canceled) return;
+            if (ctx.performed) return;
+
+            entities[currentEntityPlaying].AttackIndex++;
+        }
         
+        public void OnSelectPreviousAttack(InputAction.CallbackContext ctx)
+        {
+            if (ctx.canceled) return;
+            if (ctx.performed) return;
+            
+            entities[currentEntityPlaying].AttackIndex--;
+        }
         
+        public void OnNextRound(InputAction.CallbackContext ctx)
+        {
+            if (ctx.canceled) return;
+            if (ctx.performed) return;
+            
+            NextEntity();
+        }
+
+        #endregion
     }
 }

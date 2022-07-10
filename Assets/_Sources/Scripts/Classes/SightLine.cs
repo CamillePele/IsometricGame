@@ -42,7 +42,6 @@ namespace Classes
         // Fonction LDV basée sur le pseudo code de la fonction LDV au dessus
         public static bool HasSightLine(Vector2Int pointA, Vector2Int pointB, Func<Vector2Int, bool> isObstacle)
         {
-            Debug.Log("From " + pointA + " to " + pointB);
             foreach (Vector2Int cell in Bresenham(pointA, pointB))
             {
                 if (isObstacle(cell))
