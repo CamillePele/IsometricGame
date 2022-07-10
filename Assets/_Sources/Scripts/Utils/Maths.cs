@@ -32,5 +32,25 @@ namespace Utils
             }
             return result;
         }
+        
+        /// <summary>
+        /// Greatest common divisor between two numbers
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static int GCD(int a, int b)
+        {
+            int temp;
+    
+            while( b != 0 )
+            {
+                temp = a % b;
+                a = b;
+                b = temp;
+            }
+      
+            return a;
+        }
     }
 }

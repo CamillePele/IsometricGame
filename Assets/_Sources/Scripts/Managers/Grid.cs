@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Array2DEditor;
+using Classes;
 using Classes.Pathfinding;
 using Companion.Cell;
 using JetBrains.Annotations;
@@ -81,9 +82,17 @@ namespace Manager
             });
 
             LoadMap();
-
-            var path = Pathfinding.FindPath(GridData, new Vector2Int(-3 + Maximum, -3 + Maximum), 
-                new Vector2Int(3 + Maximum, 3 + Maximum), Direction.West, true);
+            
+            Vector2Int fromPos = new Vector2Int(0, 0);
+            var path = Pathfinding.FindPath(fromPos, new Vector2Int(3 + Maximum, 3 + Maximum), Direction.West,
+                (v2) =>
+                {
+                    if (v2.x < 0 || v2.y < 0 || v2.x >= GridSize || v2.y >= GridSize)
+                    {
+                        return false;
+                    }
+                    return GridData[v2.x][v2.y];
+                }, true);
             
             path.ForEach(v =>
             {
@@ -93,6 +102,29 @@ namespace Manager
                     cell.SetColor(Color.yellow);
                 }
             });
+
+            /*
+            
+            for (int x = 0; x < GridSize; x++)
+            {
+                for (int y = 0; y < GridSize; y++)
+                {
+                    Vector2Int currentPos = new Vector2Int(x, y);
+                    if (currentPos == fromPos)
+                    {
+                        continue;
+                    }
+
+                    if (SightLine.HasSightLine(fromPos, currentPos, (v2) => !GridData[v2.y][v2.x]))
+                    {
+                        GetCell(currentPos, true).SetColor(Color.green);
+                    }
+                    else
+                    {
+                        GetCell(currentPos, true).SetColor(Color.red);
+                    }
+                }
+            }*/
         }
 
         public void LoadMap()

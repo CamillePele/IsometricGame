@@ -17,7 +17,7 @@ namespace Classes.Pathfinding
         //     return FindPath(start, end, direction, callback);
         // }
 
-        public static List<Vector2Int> FindPath(List<List<bool>> grid, Vector2Int start, Vector2Int end, Manager.Grid.Direction direction, bool debug)
+        public static List<Vector2Int> FindPath(Vector2Int start, Vector2Int end, Manager.Grid.Direction direction, Func<Vector2Int, bool> isAvailable, bool debug)
         {
             PathNode startNode = new PathNode(0, HeuristicCost(start, end), start, null);
             if (debug) Manager.Grid.Instance.GetCell(start, true).PathNode = startNode;
@@ -75,7 +75,7 @@ namespace Classes.Pathfinding
                 closedList.Add(currentNode);
 
                 // Get the neighbours of the current node
-                List<PathNode> neighbours = GetNeighbours(grid, currentNode);
+                List<PathNode> neighbours = GetNeighbours(currentNode, isAvailable);
                 foreach (PathNode neighbour in neighbours)
                 {
                     // If the neighbour is in the closed list, skip it
@@ -105,7 +105,7 @@ namespace Classes.Pathfinding
             return null;
         }
         
-        public static List<PathNode> GetNeighbours(List<List<bool>> grid, PathNode currentNode)
+        public static List<PathNode> GetNeighbours(PathNode currentNode, Func<Vector2Int, bool> isAvailable)
         {
             List<PathNode> neighbours = new List<PathNode>();
             
@@ -122,14 +122,8 @@ namespace Classes.Pathfinding
                     // Get the neighbour position
                     Vector2Int neighbourPosition = new Vector2Int(currentNode.position.x + x, currentNode.position.y + y);
                     
-                    // If the neighbour is out of bounds, skip it
-                    if (neighbourPosition.x < 0 || neighbourPosition.x >= grid.Count || neighbourPosition.y < 0 || neighbourPosition.y >= grid[0].Count)
-                    {
-                        continue;
-                    }
-
                     // If the neighbour is not walkable, skip it
-                    if (!grid[neighbourPosition.x][neighbourPosition.y])
+                    if (!isAvailable(neighbourPosition))
                     {
                         continue;
                     }
