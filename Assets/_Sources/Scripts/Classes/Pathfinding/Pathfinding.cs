@@ -10,14 +10,7 @@ namespace Classes.Pathfinding
     {
         private const float STRAIGHT_DISTANCE = 1;
         
-        // public Pathfinding(List<List<bool>> grid, Vector2Int start, Vector2Int end, Manager.Grid.Direction direction, Action<List<Vector2Int>> callback)
-        // {
-        //     this._grid = grid;
-        //     this._debug = false;
-        //     return FindPath(start, end, direction, callback);
-        // }
-
-        public static List<Vector2Int> FindPath(Vector2Int start, Vector2Int end, Manager.Grid.Direction direction, Func<Vector2Int, bool> isAvailable, bool debug)
+        public static List<Vector2Int> FindPath(Vector2Int start, Vector2Int end, Manager.Grid.Direction direction, Func<Vector2Int, bool> isAvailable, bool debug = false)
         {
             PathNode startNode = new PathNode(0, HeuristicCost(start, end), start, null);
             if (debug) Manager.Grid.Instance.GetCell(start, true).PathNode = startNode;
@@ -100,7 +93,7 @@ namespace Classes.Pathfinding
                         Manager.Grid.Instance.GetCell(neighbour.position, true).SetColor(Color.blue);
                     }
                 }
-                Manager.Grid.Instance.GetCell(currentNode.position, true).SetColor(Color.red);
+                if (debug) Manager.Grid.Instance.GetCell(currentNode.position, true).SetColor(Color.red);
             }
             return null;
         }
