@@ -13,7 +13,7 @@ namespace Classes.Pathfinding
         public static List<Vector2Int> FindPath(Vector2Int start, Vector2Int end, Manager.Grid.Direction direction, Func<Vector2Int, bool> isAvailable, bool debug = false)
         {
             PathNode startNode = new PathNode(0, HeuristicCost(start, end), start, null);
-            if (debug) Manager.Grid.Instance.GetCell(start, true).PathNode = startNode;
+            if (debug) Manager.Grid.Instance.GetCell(start).PathNode = startNode;
             
             List<PathNode> openList = new List<PathNode>() {startNode};
             List<PathNode> closedList = new List<PathNode>();
@@ -54,7 +54,7 @@ namespace Classes.Pathfinding
 
                 if (debug)
                 {
-                    Manager.Grid.Instance.GetCell(currentNode.position, true).SetColor(Color.green);
+                    Manager.Grid.Instance.GetCell(currentNode.position).SetColor(Color.green);
                 }
                 
                 // If the current node is the end node, return the path
@@ -89,11 +89,11 @@ namespace Classes.Pathfinding
 
                     if (debug)
                     {
-                        Manager.Grid.Instance.GetCell(neighbour.position, true).PathNode = neighbour;
-                        Manager.Grid.Instance.GetCell(neighbour.position, true).SetColor(Color.blue);
+                        Manager.Grid.Instance.GetCell(neighbour.position).PathNode = neighbour;
+                        Manager.Grid.Instance.GetCell(neighbour.position).SetColor(Color.blue);
                     }
                 }
-                if (debug) Manager.Grid.Instance.GetCell(currentNode.position, true).SetColor(Color.red);
+                if (debug) Manager.Grid.Instance.GetCell(currentNode.position).SetColor(Color.red);
             }
             return null;
         }

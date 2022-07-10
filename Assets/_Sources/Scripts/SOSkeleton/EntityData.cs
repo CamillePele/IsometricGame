@@ -1,11 +1,12 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace SOSkeleton
 {
+    [CreateAssetMenu(fileName = "Entity", order = 1)]
     public class EntityData : ScriptableObject
     {
-        // PM are point movements
         public int PM;
+        List<Attack> attacks = new List<Attack>();
     }
-
 }

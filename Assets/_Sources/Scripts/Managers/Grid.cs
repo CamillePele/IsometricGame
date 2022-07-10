@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Classes.Pathfinding;
 using Companion.Cell;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -23,6 +24,8 @@ namespace Manager
                 return;
             }
             Instance = this;
+            
+            Init();
         }
         
         #endregion
@@ -64,9 +67,9 @@ namespace Manager
 
         [CanBeNull] public Cell HoverCell;
 
-        public UnityEvent<Vector2> OnCellClicked = new UnityEvent<Vector2>();
+        public UnityEvent<Vector2Int> OnCellClicked = new UnityEvent<Vector2Int>();
 
-        private void Start()
+        private void Init()
         {
             _cells = _gridLayout.GetComponentsInChildren<Cell>().ToList();
             
@@ -75,7 +78,11 @@ namespace Manager
                 c.OnHover.AddListener(() => HoverCell = c);
                 c.OnUnhover.AddListener(() => HoverCell = null);
 
-                c.OnClick.AddListener(() => OnCellClicked.Invoke(GetCellPosition(c)));
+                c.OnClick.AddListener(() =>
+                {
+                    if (!c.IsSelectable) return;
+                    OnCellClicked.Invoke(GetCellPosition(c));
+                });
             });
 
             LoadMap();
@@ -87,7 +94,7 @@ namespace Manager
             {
                 for (int y = 0; y < GridSize; y++)
                 {
-                    Cell cell = GetCell(x - Maximum, y - Maximum);
+                    Cell cell = GetCell(x, y);
                     cell.IsSelectable = _mapData.Layout[x][y] == 0; 
                 }
             }
@@ -98,7 +105,7 @@ namespace Manager
                 });
             });
 
-            // ShowLayout(_attackTemp.AttackPattern, Vector2Int.zero, new Vector2Int(1, 0), Direction.North, Color.red);
+            // ShowLayout(GetReachableCells(3), Vector2Int.zero, new Vector2Int(3, 3), Direction.North, Color.red);
         }
 
         /// <summary>
@@ -156,8 +163,10 @@ namespace Manager
                             newPivot = new Vector2Int(newLayout.Count - 1 - newPivot.x, newLayout[0].Count - 1 - newPivot.y); // Invert x and y
                         }
                     }
-                    //          Offset by the position of the grid    Substract the pivot to get the position of the layout in the grid 
-                    if (newLayout[xPos][yPos]) GetCell(position.x + xPos - newPivot.x,position.y + yPos - newPivot.y).SetColor(color);
+                    //          Offset by the position of the grid    Substract the pivot to get the position of the layout in the grid
+                    Cell cell = GetCell(position.x + xPos - newPivot.x, position.y + yPos - newPivot.y);
+                    if (cell == null || !cell.IsSelectable) continue;
+                    if (newLayout[xPos][yPos]) cell.SetColor(color);
                 }
             }
         }
@@ -170,12 +179,11 @@ namespace Manager
         /// <returns></returns>
         public Cell GetCell(int x, int y)
         {
-            if (x < -Maximum || x > Maximum || y < -Maximum || y > Maximum)
+            if (x < 0 || x > GridSize || y < 0 || y > GridSize)
             {
                 return null;
             }
-            x += Maximum; y += Maximum; // Convert to grid coordinates because the grid is offset by Maximum (eg: -4;-4)
-            
+            print($"GetCell at {x}, {y}: {x + y * GridSize}");
             
             return _cells[x + y * GridSize];
         }
@@ -185,31 +193,41 @@ namespace Manager
         /// <param name="position"></param>
         /// <param name="convert">True to convert from 0 -> max to -max/2 -> max/2</param>
         /// <returns></returns>
-        public Cell GetCell(Vector2Int position, bool convert = false)
+        public Cell GetCell(Vector2Int position)
         {
-            position = position - new Vector2Int(Maximum, Maximum); // Convert to grid coordinates because the grid is offset by Maximum (eg: -4;-4)
             return GetCell(position.x, position.y);
         }
 
 
-        public Vector2 GetCellPosition(int index)
+        public Vector2Int GetCellPosition(int index)
         {
             if (index < 0 || index >= GridSize * GridSize)
             {
                 Debug.LogWarning("Cell "+index+" is not in the grid");
-                return Vector2.zero;
+                return Vector2Int.zero;
             }
             
-            int x = index % GridSize - Maximum;
-            int y = index / GridSize - Maximum;
+            int x = index % GridSize;
+            int y = index / GridSize;
             
-            return new Vector2(x, y);
+            return new Vector2Int(x, y);
         }
-        public Vector2 GetCellPosition(Cell cell)
+        public Vector2Int GetCellPosition(Cell cell)
         {
             return GetCellPosition(cell.transform.GetSiblingIndex());
         }
 
+        /// <summary>
+        /// Fiunction to clear the grid
+        /// </summary>
+        public void Clear()
+        {
+            _cells.ForEach(c =>
+            {
+                if (c.IsSelectable) c.SetColor(Color.white);
+            });
+        }
+        
         public static List<List<bool>> GetReachableCells(int range)
         {
             List<List<bool>> result = new List<List<bool>>();
@@ -224,6 +242,21 @@ namespace Manager
             }
 
             return result;
+        }
+        
+        public int GetDistance(Vector2Int a, Vector2Int b)
+        {
+            List<Vector2Int> path = Pathfinding.FindPath(a, b, Direction.North, 
+                (v2) =>
+                {
+                    if (v2.x < 0 || v2.y < 0 || v2.x >= GridSize || v2.y >= GridSize)
+                    {
+                        return false;
+                    }
+                    return GridData[v2.x][v2.y];
+                });
+            if (path == null) return -1;
+            return path.Count;
         }
     }
 }

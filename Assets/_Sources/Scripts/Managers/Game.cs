@@ -22,32 +22,28 @@ namespace Manager
             Instance = this;
         }
         #endregion
-    
-        [SerializeField] public char disableChar = ' ';
+        
         [SerializeField] public List<Entity> entities = new List<Entity>();
-        public int currentEntityPlaying = 0;
-        
-        private void Start()
+        public int currentEntityPlaying = -1; // Index of the entity currently playing
+
+        public void Start()
         {
-            // Load json from StreamingAssets folder
-            string json = Resources.Load<TextAsset>("00").text;
-            // Parse json
-            JSONNode node = JSON.Parse(json);
-            LoadMap(node);
+            NextEntity(0);
         }
-        
-        public void NextEntity()
+
+        public void NextEntity(int index = -1)
         {
-            currentEntityPlaying++;
-            currentEntityPlaying %= entities.Count;
+            Grid.Instance.Clear();
+            if (index == -1)
+            { 
+                currentEntityPlaying++;
+                currentEntityPlaying %= entities.Count;
+            }
+            else currentEntityPlaying = index;
             
             entities[currentEntityPlaying].StartTurn();
         }
         
-        public void LoadMap(JSONNode json)
-        {
-            Grid.Instance.OnCellClicked.AddListener((v2) => print(v2));
-        }
         
     }
 }
