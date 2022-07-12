@@ -6,15 +6,30 @@ namespace Companion.PathRenderer {
 		
 		private Image image;
 		
-		public void Setup(Manager.Grid.Direction from, Manager.Grid.Direction to, PathRender parent) {
+		public void Setup(Manager.Grid.Direction from, Manager.Grid.Direction? to, PathRender parent) {
 			if (from == to) {
 				return;
 			}
 
-			if (Mathf.Abs((int) from - (int) to) % 2 == 0) { // If go straight
+			if (parent == null || to == null) // If this the first/last node, then we need to render specific sprite
+			{ 
+				image.sprite = Manager.PathRenderer.Instance.startEndLine;
+				if (parent == null && to != null) // Rotate to to direction
+				{
+					transform.localRotation = Quaternion.Euler(0, 0, (int) to * 90);
+				}
+				else // Else rotate to from direction
+				{
+					transform.localRotation = Quaternion.Euler(0, 0, (int) from * 90);
+				}
+			} 
+			else if (Mathf.Abs((int) from - (int) to) % 2 == 0) // If go straight
+			{
 				image.sprite = Manager.PathRenderer.Instance.straightLine;
 				transform.rotation = parent.transform.rotation;
-			} else { // If turn
+			} 
+			else // If turn
+			{
 				image.sprite = Manager.PathRenderer.Instance.cornerLine;
 				
 				// Get if turn right or left, handle out of range
