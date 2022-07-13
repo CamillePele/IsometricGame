@@ -270,7 +270,7 @@ namespace Manager
             return path.Count;
         }
         
-        public Direction? GetDirection(Vector2Int a, Vector2Int b)
+        public static Direction? GetDirection(Vector2Int a, Vector2Int b)
         {
             Vector2Int diff = b - a;
             

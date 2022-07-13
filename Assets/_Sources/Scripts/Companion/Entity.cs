@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Classes;
+using Classes.Pathfinding;
+using Companion.PathRenderer;
+using Manager;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 using Grid = Manager.Grid;
@@ -108,7 +111,7 @@ public class Entity : MonoBehaviour
         
         if (pos != null)
         {
-            Manager.Grid.Direction? dir = _gridManager.GetDirection(Position, pos.Value);
+            Manager.Grid.Direction? dir = Manager.Grid.GetDirection(Position, pos.Value);
             if (dir != null) // TODO : handle diagonal movement
             {
                 Direction = dir.Value;
@@ -132,6 +135,9 @@ public class Entity : MonoBehaviour
             {
                 DisplayAttackCells(entityData.attacks[AttackIndex - 1], pos.Value, Direction);
             }
+        }
+        else if (pos.HasValue) {
+            PathRenderer.Instance.DrawPath(Pathfinding.FindPath(Position, pos.Value, Grid.Direction.North, i => true));
         }
     }
     

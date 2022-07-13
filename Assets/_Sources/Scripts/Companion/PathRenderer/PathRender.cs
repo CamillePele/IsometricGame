@@ -4,13 +4,9 @@ using UnityEngine.UI;
 namespace Companion.PathRenderer {
 	public class PathRender : MonoBehaviour {
 		
-		private Image image;
+		[SerializeField] private Image image;
 		
 		public void Setup(Manager.Grid.Direction from, Manager.Grid.Direction? to, PathRender parent) {
-			if (from == to) {
-				return;
-			}
-
 			if (parent == null || to == null) // If this the first/last node, then we need to render specific sprite
 			{ 
 				image.sprite = Manager.PathRenderer.Instance.startEndLine;
