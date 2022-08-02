@@ -11337,7 +11337,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c79da458655045d898f93c55c77b7212, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  entityData: {fileID: 11400000, guid: e26c919c560e9ad45a4debc7aef1f53e, type: 2}
+  entityData: {fileID: 11400000, guid: bef369e9cc5b4274bb1515e27332f05f, type: 2}
+  gameStats:
+    statMax: 100
+    statMin: 0
+    _health: 0
+    _attack: 0
+    _speed: 0
+    _defense: 0
+    _attackSpe: 0
+    _defenseSpe: 0
+  modifiersStats:
+    statMax: 100
+    statMin: 0
+    _health: 0
+    _attack: 0
+    _speed: 0
+    _defense: 0
+    _attackSpe: 0
+    _defenseSpe: 0
   _direction: 0
 --- !u!136 &405325938
 CapsuleCollider:
@@ -41026,7 +41044,7 @@ Transform:
   m_Children:
   - {fileID: 2035540100}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1446175001
 GameObject:
@@ -48685,7 +48703,7 @@ Transform:
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1746132415
 MonoBehaviour:
@@ -48700,6 +48718,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   entityData: {fileID: 11400000, guid: e26c919c560e9ad45a4debc7aef1f53e, type: 2}
+  gameStats:
+    statMax: 100
+    statMin: 0
+    _health: 0
+    _attack: 0
+    _speed: 0
+    _defense: 0
+    _attackSpe: 0
+    _defenseSpe: 0
+  modifiersStats:
+    statMax: 31
+    statMin: 5
+    _health: 5
+    _attack: 5
+    _speed: 5
+    _defense: 5
+    _attackSpe: 5
+    _defenseSpe: 5
   _direction: 0
 --- !u!1 &1751424948
 GameObject:

@@ -10,28 +10,30 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2a05458260b94c9aa82347efb63e395b, type: 3}
-  m_Name: Test
+  m_Name: Test 1
   m_EditorClassIdentifier: 
   attackName: 
-  attackDamage: 70
+  attackDamage: 20
   attackCost: 0
-  isSpecial: 1
+  isSpecial: 0
   _attackPatternArray:
-    gridSize: {x: 1, y: 3}
+    gridSize: {x: 5, y: 5}
     cellSize: {x: 32, y: 16}
     cells:
-    - row: 00000000
-    - row: 5a000000
-    - row: 64000000
-  attackPivot: {x: 0, y: 0}
+    - row: 0000000000000000640000000000000000000000
+    - row: 0000000064000000640000006400000000000000
+    - row: 6400000064000000640000006400000064000000
+    - row: 0000000064000000640000006400000000000000
+    - row: 0000000000000000640000000000000000000000
+  attackPivot: {x: 2, y: 2}
   _attackablePatternArray:
     gridSize: {x: 7, y: 7}
     cellSize: {x: 32, y: 16}
     cells:
     - row: 00000001000000
-    - row: 00000001000000
-    - row: 00000001000000
+    - row: 00000101010000
+    - row: 00010101010100
     - row: 01010100010101
-    - row: 00000001000000
-    - row: 00000001000000
+    - row: 00010101010100
+    - row: 00000101010000
     - row: 00000001000000

@@ -44,6 +44,11 @@ namespace Manager
             
             entities[currentEntityPlaying].StartTurn();
         }
+        
+        public Entity GetEntityAt(Vector2Int pos)
+        {
+            return entities.FirstOrDefault(e => e.Position == pos);
+        }
 
         #region Inputs
 

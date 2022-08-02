@@ -8,6 +8,8 @@ using Grid = Manager.Grid;
 public class Entity : MonoBehaviour
 {
     public SOSkeleton.EntityData entityData;
+    public EntityStats gameStats;
+    public EntityStats modifiersStats;
     
     private Vector2Int _position;
     public Vector2Int Position
@@ -50,7 +52,7 @@ public class Entity : MonoBehaviour
         }
     }
     private List<Vector2Int> _availableAttackCells = new List<Vector2Int>();
-    private List<Vector2Int> _colorizedAttackCells = new List<Vector2Int>();
+    private List<Tuple<Vector2Int, int>> _attackCells = new List<Tuple<Vector2Int, int>>();
     
     private Manager.Game _gameManager;
     private Manager.Grid _gridManager;
@@ -63,6 +65,8 @@ public class Entity : MonoBehaviour
         _gridManager.OnHoverPositionChanged.AddListener(OnHoverPositionChanged);
         Position = new Vector2Int(4, 4);
         _attackIndex = 1;
+
+        gameStats = entityData.constStats.Clone(); // Set default stats to data stats
     }
 
     public void UpdatePosition(Vector2Int newPos = default)
@@ -75,6 +79,15 @@ public class Entity : MonoBehaviour
         
         // TODO : Animate movement
         transform.position = new Vector3(newPos.x + 0.5f, transform.position.y, newPos.y + 0.5f);
+    }
+    
+    public void TakeDamage(int damage)
+    {
+        gameStats.health -= damage;
+        if (gameStats.health <= 0)
+        {
+            // TODO : Animate death
+        }
     }
     
     public void UpdateDirection(Manager.Grid.Direction newDir = default)
@@ -117,11 +130,11 @@ public class Entity : MonoBehaviour
         
         if (AttackIndex > 0) // If the player selected an attack
         {        
-            foreach (Vector2Int cell in _colorizedAttackCells)
+            foreach (Tuple<Vector2Int, int> cellData in _attackCells)
             {
-                _gridManager.GetCell(cell).Clear();
+                _gridManager.GetCell(cellData.Item1).Clear();
             }
-            _colorizedAttackCells.Clear();
+            _attackCells.Clear();
 
             foreach (Vector2Int attackableCell in _availableAttackCells) // Re colorize the attackable cells, don't care about loop in empty list
             {
@@ -146,8 +159,7 @@ public class Entity : MonoBehaviour
         {
             if (_availableAttackCells.Contains(pos))
             {
-                // TODO : move for the moment to have feedback befor attack implementation
-                Position = pos;
+                entityData.attacks[AttackIndex - 1].ApplyAttack(this, _attackCells);
             }
         }
     }
@@ -156,12 +168,12 @@ public class Entity : MonoBehaviour
     {
         var reach = Manager.Grid.GetReachableCells(entityData.PM);
         Vector2Int pivot = new Vector2Int(reach.Count / 2, reach.Count / 2); // Set the pivot to the center of the layout
-        List<Vector2Int> cells =_gridManager.GetCellsByLayout(reach, Position, pivot, Manager.Grid.Direction.North);
+        List<Tuple<Vector2Int, Vector2Int>> cells =_gridManager.GetCellsByLayout(reach, Position, pivot, Manager.Grid.Direction.North);
 
-        foreach (Vector2Int cell in cells)
+        foreach (Tuple<Vector2Int, Vector2Int> cellData in cells)
         {
-            if (!CanMoveTo(cell)) continue;
-            _gridManager.GetCell(cell).SetColor(Color.green);
+            if (!CanMoveTo(cellData.Item1)) continue;
+            _gridManager.GetCell(cellData.Item1).SetColor(Color.green);
         }
     }
     
@@ -169,31 +181,33 @@ public class Entity : MonoBehaviour
     {
         List<List<bool>> attackableCells = attack.AttackablePattern;
         Vector2Int pivot = new Vector2Int(attackableCells.Count / 2, attackableCells.Count / 2); // Set the pivot to the center of the layout
-        List<Vector2Int> cells = _gridManager.GetCellsByLayout(attackableCells, Position, pivot, Manager.Grid.Direction.North);
+        List<Tuple<Vector2Int, Vector2Int>> cells = _gridManager.GetCellsByLayout(attackableCells, Position, pivot, Manager.Grid.Direction.North);
 
         _availableAttackCells = new List<Vector2Int>();
         
-        foreach (Vector2Int cell in cells)
+        foreach (Tuple<Vector2Int, Vector2Int> cellData in cells)
         { 
-            bool hasSightLine = SightLine.HasSightLine(Position, cell, (v2) => _gridManager.mapData.Layout[v2.x][v2.y] > 0);
+            bool hasSightLine = SightLine.HasSightLine(Position, cellData.Item1, (v2) => _gridManager.mapData.Layout[v2.x][v2.y] > 0);
             if (hasSightLine)
             {
-                _gridManager.GetCell(cell).SetColor(Color.blue);
-                _availableAttackCells.Add(cell);
+                _gridManager.GetCell(cellData.Item1).SetColor(Color.blue);
+                _availableAttackCells.Add(cellData.Item1);
             }
         }
     }
 
     public void DisplayAttackCells(SOSkeleton.AttackData attack, Vector2Int pos, Grid.Direction dir)
     {
-        List<List<bool>> attackCells = attack.AttackPattern;
         Vector2Int pivot = attack.attackPivot;
-        List<Vector2Int> cells = _gridManager.GetCellsByLayout(attackCells, pos, pivot, dir);
+        List<Tuple<Vector2Int, Vector2Int>> cells = _gridManager.GetCellsByLayout(attack.AttackPattern, pos, pivot, dir);
         
-        foreach (Vector2Int cell in cells)
+        foreach (Tuple<Vector2Int, Vector2Int> cellData in cells)
         {
-            _gridManager.GetCell(cell).SetColor(Color.red);
-            _colorizedAttackCells.Add(cell);
+            _gridManager.GetCell(cellData.Item1).SetColor(Color.red);
+            
+            int damageValue = attack.AttackPatternValue[cellData.Item2.x][cellData.Item2.y];
+            
+            _attackCells.Add(new Tuple<Vector2Int, int>(cellData.Item1, damageValue));
         }
     }
     

@@ -118,9 +118,9 @@ namespace Manager
         /// <param name="layout">Cell to show</param>
         /// <param name="position">Position to show on the grid</param>
         /// <param name="pivot">Center of the layout</param>
-        public List<Vector2Int> GetCellsByLayout(List<List<bool>> layout, Vector2Int position, Vector2Int pivot, Direction direction)
+        public List<Tuple<Vector2Int, Vector2Int>> GetCellsByLayout(List<List<bool>> layout, Vector2Int position, Vector2Int pivot, Direction direction)
         {
-            List<Vector2Int> cells = new List<Vector2Int>();
+            List<Tuple<Vector2Int, Vector2Int>> cells = new List<Tuple<Vector2Int, Vector2Int>>();
             for (int x = 0; x < layout.Count; x++)
             {
                 for (int y = 0; y < layout[x].Count; y++)
@@ -174,7 +174,7 @@ namespace Manager
                     if (cell == null || !cell.IsSelectable) continue;
                     if (newLayout[xPos][yPos])
                     {
-                        cells.Add(cellPos);
+                        cells.Add(new Tuple<Vector2Int, Vector2Int>(cellPos, new Vector2Int(x, y)));
                     }
                 }
             }
