@@ -5,7 +5,7 @@ namespace Utils
 {
     public static class GeneralUtils
     {
-        public static void AfterXFrames(MonoBehaviour monoBehaviour, int frames, System.Action action)
+        public static void AfterXFrames(this MonoBehaviour monoBehaviour, int frames, System.Action action)
         {
             monoBehaviour.StartCoroutine(AfterXFramesCoroutine(frames, action));
         }
@@ -16,6 +16,17 @@ namespace Utils
             {
                 yield return new WaitForEndOfFrame();
             }
+            action();
+        }
+        
+        public static void AfterXSeconds(this MonoBehaviour monoBehaviour, float seconds, System.Action action)
+        {
+            monoBehaviour.StartCoroutine(AfterXSecondsCoroutine(seconds, action));
+        }
+        
+        private static IEnumerator AfterXSecondsCoroutine(float seconds, System.Action action)
+        {
+            yield return new WaitForSeconds(seconds);
             action();
         }
     }

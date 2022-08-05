@@ -24,3 +24,6 @@ MonoBehaviour:
   PM: 3
   attacks:
   - {fileID: 11400000, guid: 46a519c59f49123449d8f819c384c7b5, type: 2}
+  - {fileID: 11400000, guid: 46a519c59f49123449d8f819c384c7b5, type: 2}
+  - {fileID: 11400000, guid: 46a519c59f49123449d8f819c384c7b5, type: 2}
+  - {fileID: 11400000, guid: 46a519c59f49123449d8f819c384c7b5, type: 2}
