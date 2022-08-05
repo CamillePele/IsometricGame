@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Companion.UI;
 using SimpleJSON;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -26,6 +27,8 @@ namespace Manager
         
         [SerializeField] public List<Entity> entities = new List<Entity>();
         public int currentEntityPlaying = -1; // Index of the entity currently playing
+        
+        public EntityDrawer entityDrawer; // TODO: temporary
 
         public void Start()
         {
@@ -43,6 +46,8 @@ namespace Manager
             else currentEntityPlaying = index;
             
             entities[currentEntityPlaying].StartTurn();
+            
+            entityDrawer.SetEntity(entities[currentEntityPlaying]);
         }
         
         public Entity GetEntityAt(Vector2Int pos)

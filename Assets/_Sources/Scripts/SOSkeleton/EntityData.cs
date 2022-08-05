@@ -11,6 +11,6 @@ namespace SOSkeleton
         public EntityStats constStats; // type stats
         
         public int PM;
-        public List<AttackData> attacks = new List<AttackData>();
+        public List<AttackData> attacks = new List<AttackData>(4);
     }
 }

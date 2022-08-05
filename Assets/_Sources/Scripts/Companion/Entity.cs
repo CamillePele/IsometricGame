@@ -4,12 +4,14 @@ using Classes;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 using Grid = Manager.Grid;
+using Random = UnityEngine.Random;
 
 public class Entity : MonoBehaviour
 {
     public SOSkeleton.EntityData entityData;
     public EntityStats gameStats;
     public EntityStats modifiersStats;
+    public OrderedList<SOSkeleton.AttackData> attacks = new OrderedList<SOSkeleton.AttackData>(4);
     
     private Vector2Int _position;
     public Vector2Int Position
@@ -67,6 +69,16 @@ public class Entity : MonoBehaviour
         _attackIndex = 1;
 
         gameStats = entityData.constStats.Clone(); // Set default stats to data stats
+        
+        // To debug take 4 randomly attacks from the entity data.
+        List<int> randomAttacks = new List<int>() {0, 1, 2, 3};
+        for (int i = 0; i < 4; i++)
+        {
+            int randomIndex = Random.Range(0, randomAttacks.Count);
+            attacks.Set(randomIndex, entityData.attacks[randomAttacks[randomIndex]]);
+            
+            randomAttacks.Remove(randomIndex);
+        }
     }
 
     public void UpdatePosition(Vector2Int newPos = default)
