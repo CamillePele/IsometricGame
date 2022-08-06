@@ -3,6 +3,7 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 namespace Companion.Cell
 {
@@ -53,6 +54,11 @@ namespace Companion.Cell
 
         public void OnPointerExit(PointerEventData eventData)
         {
+            Vector2 mousePosition = Mouse.current.position.ReadValue();
+            if (mousePosition.y < 0)
+            {
+                return;
+            }
             if (!IsOpen)
             {
                 return;

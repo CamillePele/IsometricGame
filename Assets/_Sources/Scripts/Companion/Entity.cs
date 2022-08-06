@@ -8,6 +8,11 @@ using Random = UnityEngine.Random;
 
 public class Entity : MonoBehaviour
 {
+    [Header("Entity Infos")]
+    public string entityName;
+    public int entityLevel;
+
+    [Space]
     public SOSkeleton.EntityData entityData;
     public EntityStats gameStats;
     public EntityStats modifiersStats;

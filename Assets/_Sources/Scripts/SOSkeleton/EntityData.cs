@@ -8,6 +8,7 @@ namespace SOSkeleton
     [CreateAssetMenu(fileName = "Entity", order = 1)]
     public class EntityData : ScriptableObject
     {
+        public Sprite entityThumbnail;
         public EntityStats constStats; // type stats
         
         public int PM;

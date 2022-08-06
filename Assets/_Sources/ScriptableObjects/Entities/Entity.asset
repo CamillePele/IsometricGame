@@ -12,10 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 003cac80dfdb4dd2bc7bf395e4a3cda9, type: 3}
   m_Name: Entity
   m_EditorClassIdentifier: 
+  entityThumbnail: {fileID: 21300000, guid: 7dbce8b7477cd5a4bbecdc3966342eef, type: 3}
   constStats:
     statMax: 100
     statMin: 0
     _health: 100
+    _movementPoint: 0
+    _actionPoint: 0
     _attack: 0
     _speed: 0
     _defense: 0

@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
+// TODO: To refactor this class.
 namespace Classes
 {
     [Serializable]
@@ -16,6 +17,26 @@ namespace Classes
             set
             {
                 _health = Mathf.Clamp(value, statMin, statMax);
+            }
+        }
+
+        [SerializeField] private int _movementPoint;
+        public int movementPoint
+        {
+            get => _movementPoint;
+            set
+            {
+                _movementPoint = Mathf.Clamp(value, statMin, statMax);
+            }
+        }
+        
+        [SerializeField] private int _actionPoint;
+        public int actionPoint
+        {
+            get => _actionPoint;
+            set
+            {
+                _actionPoint = Mathf.Clamp(value, statMin, statMax);
             }
         }
 
@@ -69,10 +90,12 @@ namespace Classes
             }
         }
         
-        public EntityStats(int health, int attack, int speed, int defense, int attackSpe, int defenseSpe)
+        public EntityStats(int health, int movementPoint, int actionPoint, int attack, int speed, int defense, int attackSpe, int defenseSpe)
         {
             // Ensure that all stats are in range
             this.health = health;
+            this.movementPoint = movementPoint;
+            this.actionPoint = actionPoint;
             this.attack = attack;
             this.speed = speed;
             this.defense = defense;
@@ -83,6 +106,8 @@ namespace Classes
         public EntityStats()
         {
             this.health = 0;
+            this.movementPoint = 0;
+            this.actionPoint = 0;
             this.attack = 0;
             this.speed = 0;
             this.defense = 0;
@@ -92,7 +117,7 @@ namespace Classes
         
         public EntityStats Clone()
         {
-            return new EntityStats(health, attack, speed, defense, attackSpe, defenseSpe);
+            return new EntityStats(health, movementPoint, actionPoint, attack, speed, defense, attackSpe, defenseSpe);
         }
     }
 }
