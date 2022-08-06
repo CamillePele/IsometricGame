@@ -10,8 +10,8 @@ namespace Companion.UI
     {
         public Entity entity;
         
-        [SerializeField] private List<Button> _spellButtons = new List<Button>();
-        [SerializeField] private Button _movementButton;
+        [SerializeField] private List<Toggle> _spellToggles = new List<Toggle>();
+        [SerializeField] private Toggle _movementToggle;
         [SerializeField] private Button _backpackButton; // TODO: to be determined
          
         public void SetEntity(Entity entity)
@@ -20,18 +20,22 @@ namespace Companion.UI
             
             int currentEntityIndex = Manager.Game.Instance.currentEntityPlaying;
 
-            for (int i = 0; i < _spellButtons.Count; i++)
+            for (int i = 0; i < _spellToggles.Count; i++)
             {
                 int index = i;
-                _spellButtons[index].onClick.AddListener(() =>
+                _spellToggles[index].onValueChanged.AddListener((b) =>
                 {
+                    if (!b) return;
+                    
                     print("Spell " + index + " clicked");
                     Manager.Game.Instance.entities[currentEntityIndex].AttackIndex = index + 1; // Because index 0 is the movement button
                 });
             }
             
-            _movementButton.onClick.AddListener(() =>
+            _movementToggle.onValueChanged.AddListener((b) =>
             {
+                if (!b) return;
+                
                 Manager.Game.Instance.entities[currentEntityIndex].AttackIndex = 0;
             });
         }
