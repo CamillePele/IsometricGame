@@ -137,12 +137,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _isPressed: 0
   _isHovered: 0
+  _mainColor: {r: 0, g: 0, b: 0, a: 1}
+  _shadowColor: {r: 0, g: 0, b: 0, a: 1}
   _childRectTransform: {fileID: 5364248325012369406}
-  _shadow: {fileID: 896340646870825090}
+  _stepNumber: 5
   _text: {fileID: 6666479064030103544}
   _hoverHeight: 5
   _pressedHeight: 0
   _defaultHeight: 3.2
+  _animationDuration: 0.1
+  _direction: {x: -1, y: 1}
 --- !u!1 &7867661966675158454
 GameObject:
   m_ObjectHideFlags: 0
@@ -288,7 +292,6 @@ GameObject:
   - component: {fileID: 5364248325012369406}
   - component: {fileID: 8159168509780870934}
   - component: {fileID: 1704441669207596799}
-  - component: {fileID: 896340646870825090}
   - component: {fileID: 7646764515564380741}
   m_Layer: 0
   m_Name: Background
@@ -354,21 +357,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 10
---- !u!114 &896340646870825090
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8026726954853896671}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_EffectColor: {r: 0, g: 0, b: 0, a: 1}
-  m_EffectDistance: {x: 0, y: 0}
-  m_UseGraphicAlpha: 1
 --- !u!114 &7646764515564380741
 MonoBehaviour:
   m_ObjectHideFlags: 0

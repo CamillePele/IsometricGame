@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -47,14 +48,19 @@ namespace _Sources.Scripts.Companion.UI
         }
         
         [Header("Stylized Button")]
+        [SerializeField] private Color _mainColor;
+        [SerializeField] private Color _shadowColor;
         [SerializeField] private RectTransform _childRectTransform;
-        [SerializeField] private Shadow _shadow;
+        [SerializeField] private int _stepNumber = 10;
         [SerializeField] private TextMeshProUGUI _text;
+        private List<Shadow> _shadows;
         
         [Header("Parameters")]
         [SerializeField] private float _hoverHeight = 5;
         [SerializeField] private float _pressedHeight = 0;
         [SerializeField] private float _defaultHeight = 3.2f;
+        [SerializeField] private float _animationDuration = 0.1f;
+        [SerializeField] private Vector2 _direction = new Vector2(0, -1);
 
         private float _height;
         private Sequence _sequence1;
@@ -62,11 +68,23 @@ namespace _Sources.Scripts.Companion.UI
         private void Awake()
         {
             _sequence1 = DOTween.Sequence();
+            
+            _shadows = new List<Shadow>();
+            for (int i = 0; i < _stepNumber; i++)
+            {
+                // Add shadow to this and to the list
+                var shadow = _childRectTransform.gameObject.AddComponent<Shadow>();
+                _shadows.Add(shadow);
+            }
+            
+            
         }
 
         private void Start()
         {
             SetHeight(_defaultHeight, false);
+
+            _direction = _direction.normalized;
         }
 
         public void SetHeight(float height, bool animate = true)
@@ -82,18 +100,21 @@ namespace _Sources.Scripts.Companion.UI
                 {
                     _height = y;
 
-                    Vector3 newShadowOffset = _shadow.effectDistance;
-                    newShadowOffset.y = -y;
-                    _shadow.effectDistance = newShadowOffset;
+                    UpdateShadow();
 
+                    Vector2 position = _direction.normalized * _height;
+                    
                     Vector3 targetLocalPosition = _childRectTransform.localPosition;
-                    targetLocalPosition.y = y;
+                    targetLocalPosition.y = position.y;
+                    targetLocalPosition.x = position.x;
                     _childRectTransform.localPosition = targetLocalPosition;
                     
                     targetLocalPosition = _text.transform.localPosition;
-                    targetLocalPosition.y = y;
+                    targetLocalPosition.y = position.y;
+                    targetLocalPosition.x = position.x;
                     _text.transform.localPosition = targetLocalPosition;
-                }, height, 0.1f));
+                    
+                }, height, _animationDuration));
                 
                 _sequence1.SetEase(Ease.OutSine);
                 _sequence1.Play();
@@ -102,20 +123,40 @@ namespace _Sources.Scripts.Companion.UI
             {
                 _height = height;
                 
+                UpdateShadow();
+
+                Vector2 position = _direction.normalized * _height;
+                    
                 Vector3 targetLocalPosition = _childRectTransform.localPosition;
-                targetLocalPosition.y = height;
+                targetLocalPosition.y = position.y;
+                targetLocalPosition.x = position.x;
                 _childRectTransform.localPosition = targetLocalPosition;
-                
-                Vector3 newShadowOffset = _shadow.effectDistance;
-                newShadowOffset.y = -height;
-                _shadow.effectDistance = newShadowOffset;
-                
+                    
                 targetLocalPosition = _text.transform.localPosition;
-                targetLocalPosition.y = height;
+                targetLocalPosition.y = position.y;
+                targetLocalPosition.x = position.x;
                 _text.transform.localPosition = targetLocalPosition;
             }
         }
 
+        public void UpdateShadow()
+        {
+            float lastHeight = 0;
+            
+            for (int i = 0; i < _stepNumber; i++)
+            {
+                var shadow = _shadows[i];
+                shadow.effectDistance = new Vector2(
+                    -_height * ((i + 1f) / _stepNumber - lastHeight) * _direction.x,
+                    -_height * ((i + 1f) / _stepNumber - lastHeight) * _direction.y);
+                
+                lastHeight = (i + 1f) / _stepNumber;
+            }
+            
+            _shadows.ForEach(shadow => shadow.effectColor = _shadowColor);
+        }
+        
+        
         #region Events
         
         public void OnPointerDown(PointerEventData eventData)
