@@ -11,10 +11,7 @@ using Utils;
 
 namespace _Sources.Scripts.Companion.UI
 {
-    public class StylizedButton : MonoBehaviour, 
-        IPointerDownHandler, IPointerEnterHandler, 
-        IPointerExitHandler, IPointerUpHandler, ISelectHandler, 
-        IDeselectHandler, ISubmitHandler
+    public class GenericButton : MonoBehaviour
     {
 
         [SerializeField] private bool _isPressed; public bool IsPressed
@@ -48,12 +45,31 @@ namespace _Sources.Scripts.Companion.UI
         }
         
         [Header("Stylized Button")]
-        [SerializeField] private Color _mainColor;
-        [SerializeField] private Color _shadowColor;
-        [SerializeField] private RectTransform _childRectTransform;
-        [SerializeField] private int _stepNumber = 10;
+        [SerializeField] private Color _mainColor; public Color MainColor
+        {
+            get { return _mainColor; }
+            set
+            {
+                if (value == _mainColor) return;
+                _mainColor = value;
+                UpdateColor();
+            }
+        }
+        [SerializeField] private Color _shadowColor; public Color ShadowColor
+        {
+            get { return _shadowColor; }
+            set
+            {
+                if (value == _shadowColor) return;
+                _shadowColor = value;
+                UpdateColor();
+            }
+        }
+        [SerializeField] private Image _background;
+        [SerializeField] private Outline _outline;
+        [Range(1, 10)] [SerializeField] private int _stepNumber = 10;
         [SerializeField] private TextMeshProUGUI _text;
-        private List<Shadow> _shadows;
+        private List<Shadow> _shadows = new List<Shadow>();
         
         [Header("Parameters")]
         [SerializeField] private float _hoverHeight = 5;
@@ -68,16 +84,16 @@ namespace _Sources.Scripts.Companion.UI
         private void Awake()
         {
             _sequence1 = DOTween.Sequence();
+
+            _outline = _background.GetComponent<Outline>();
             
             _shadows = new List<Shadow>();
             for (int i = 0; i < _stepNumber; i++)
             {
                 // Add shadow to this and to the list
-                var shadow = _childRectTransform.gameObject.AddComponent<Shadow>();
+                var shadow = _background.gameObject.AddComponent<Shadow>();
                 _shadows.Add(shadow);
             }
-            
-            
         }
 
         private void Start()
@@ -87,6 +103,14 @@ namespace _Sources.Scripts.Companion.UI
             _direction = _direction.normalized;
         }
 
+        public void OnValidate()
+        {
+            if (_stepNumber < 1) _stepNumber = 1;
+            if (_stepNumber > 10) _stepNumber = 10;
+            
+            UpdateColor();
+        }
+        
         public void SetHeight(float height, bool animate = true)
         {
             // StartCoroutine(UpdateHeight(height));
@@ -104,10 +128,10 @@ namespace _Sources.Scripts.Companion.UI
 
                     Vector2 position = _direction.normalized * _height;
                     
-                    Vector3 targetLocalPosition = _childRectTransform.localPosition;
+                    Vector3 targetLocalPosition = _background.rectTransform.localPosition;
                     targetLocalPosition.y = position.y;
                     targetLocalPosition.x = position.x;
-                    _childRectTransform.localPosition = targetLocalPosition;
+                    _background.rectTransform.localPosition = targetLocalPosition;
                     
                     targetLocalPosition = _text.transform.localPosition;
                     targetLocalPosition.y = position.y;
@@ -127,10 +151,10 @@ namespace _Sources.Scripts.Companion.UI
 
                 Vector2 position = _direction.normalized * _height;
                     
-                Vector3 targetLocalPosition = _childRectTransform.localPosition;
+                Vector3 targetLocalPosition = _background.rectTransform.localPosition;
                 targetLocalPosition.y = position.y;
                 targetLocalPosition.x = position.x;
-                _childRectTransform.localPosition = targetLocalPosition;
+                _background.rectTransform.localPosition = targetLocalPosition;
                     
                 targetLocalPosition = _text.transform.localPosition;
                 targetLocalPosition.y = position.y;
@@ -155,46 +179,14 @@ namespace _Sources.Scripts.Companion.UI
             
             _shadows.ForEach(shadow => shadow.effectColor = _shadowColor);
         }
-        
-        
-        #region Events
-        
-        public void OnPointerDown(PointerEventData eventData)
+
+        public void UpdateColor()
         {
-            IsPressed = true;
+            if (_outline != null) _outline.effectColor = _shadowColor;
+            else _background.GetComponent<Outline>().effectColor = _shadowColor;
+            
+            _shadows.ForEach(shadow => shadow.effectColor = _shadowColor);
+            _background.color = _mainColor;
         }
-        
-        public void OnPointerUp(PointerEventData eventData)
-        {
-            IsPressed = false;
-        }
-        
-        public void OnPointerExit(PointerEventData eventData)
-        {
-            IsHovered = false;
-        }
-        
-        public void OnPointerEnter(PointerEventData eventData)
-        {
-            IsHovered = true;
-        }
-        
-        public void OnSelect(BaseEventData eventData)
-        {
-            IsHovered = true;
-        }
-        
-        public void OnDeselect(BaseEventData eventData)
-        {
-            IsHovered = false;
-        }
-        
-        public void OnSubmit(BaseEventData eventData)
-        {
-            IsHovered = false;
-        }
-        
-        #endregion
-        
     }
 }
