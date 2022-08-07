@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 003cac80dfdb4dd2bc7bf395e4a3cda9, type: 3}
   m_Name: Entity
   m_EditorClassIdentifier: 
+  entityName: 
+  entityDescription: 
   entityThumbnail: {fileID: 21300000, guid: 7dbce8b7477cd5a4bbecdc3966342eef, type: 3}
   constStats:
     statMax: 100
@@ -25,8 +27,4 @@ MonoBehaviour:
     _attackSpe: 0
     _defenseSpe: 0
   PM: 3
-  attacks:
-  - {fileID: 11400000, guid: 46a519c59f49123449d8f819c384c7b5, type: 2}
-  - {fileID: 11400000, guid: a6a8ab10b23c92e4b8cdb22649c10192, type: 2}
-  - {fileID: 11400000, guid: c57b984fbdee8cf4393aab703bb5b8a8, type: 2}
-  - {fileID: 11400000, guid: 5ad8f1c62fc8c734ebe7e0f34dede511, type: 2}
+  availableAttacks: []

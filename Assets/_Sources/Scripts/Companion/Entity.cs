@@ -54,7 +54,7 @@ public class Entity : MonoBehaviour
         get => _attackIndex;
         set
         {
-            _attackIndex = value % (entityData.attacks.Count + 1);
+            _attackIndex = value % (entityData.availableAttacks.Count + 1);
             UpdateDisplay();
         }
     }
@@ -80,7 +80,7 @@ public class Entity : MonoBehaviour
         for (int i = 0; i < 4; i++)
         {
             int randomIndex = Random.Range(0, randomAttacks.Count);
-            attacks.Set(randomIndex, entityData.attacks[randomAttacks[randomIndex]]);
+            attacks.Set(randomIndex, entityData.availableAttacks[randomAttacks[randomIndex]]);
             
             randomAttacks.Remove(randomIndex);
         }
@@ -128,7 +128,7 @@ public class Entity : MonoBehaviour
         }
         else //Display attackable cells
         {
-            DisplayAttackableCells(entityData.attacks[AttackIndex - 1]);
+            DisplayAttackableCells(entityData.availableAttacks[AttackIndex - 1]);
         }
     }
     
@@ -160,7 +160,7 @@ public class Entity : MonoBehaviour
 
             if (pos != null  && _availableAttackCells.Contains(pos.Value))
             {
-                DisplayAttackCells(entityData.attacks[AttackIndex - 1], pos.Value, Direction);
+                DisplayAttackCells(entityData.availableAttacks[AttackIndex - 1], pos.Value, Direction);
             }
         }
     }
@@ -176,7 +176,7 @@ public class Entity : MonoBehaviour
         {
             if (_availableAttackCells.Contains(pos))
             {
-                entityData.attacks[AttackIndex - 1].ApplyAttack(this, _attackCells);
+                entityData.availableAttacks[AttackIndex - 1].ApplyAttack(this, _attackCells);
             }
         }
     }
