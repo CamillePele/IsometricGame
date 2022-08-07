@@ -14,11 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ID: 061F7ED4-794C-4DA1-95C2-9C2502BD85B5
   FriendlyName: 123
-  Icon: {fileID: 21300000, guid: 581d85386052d4c4583fc44c59d6fa7f, type: 3}
-  attackName: 
-  attackDamage: 20
-  attackCost: 0
-  isSpecial: 0
+  Icon: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  Description: 
+  Damage: 0
+  AttackCost: 0
+  IsSpecial: 0
+  Type: 0
+  RandomRange: 0
   _attackPatternArray:
     gridSize: {x: 1, y: 1}
     cellSize: {x: 32, y: 16}

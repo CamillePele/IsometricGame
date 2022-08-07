@@ -15,7 +15,7 @@ MonoBehaviour:
   ID: A6551704-CB62-4B00-A124-CA449B7B3DB2
   FriendlyName: greg
   Icon: {fileID: 21300000, guid: 7dbce8b7477cd5a4bbecdc3966342eef, type: 3}
-  entityThumbnail: {fileID: 21300000, guid: 04054b896687eda439e93f65682d9d0f, type: 3}
+  Description: 
   constStats:
     statMax: 100
     statMin: 0
@@ -27,5 +27,11 @@ MonoBehaviour:
     _defense: 0
     _attackSpe: 0
     _defenseSpe: 0
+  TypeOne: 3
+  TypeTwo: 7
   PM: 0
-  availableAttacks: []
+  AvailableAttacks:
+  - {fileID: 11400000, guid: 46a519c59f49123449d8f819c384c7b5, type: 2}
+  - {fileID: 11400000, guid: a6a8ab10b23c92e4b8cdb22649c10192, type: 2}
+  - {fileID: 11400000, guid: c57b984fbdee8cf4393aab703bb5b8a8, type: 2}
+  - {fileID: 11400000, guid: 5ad8f1c62fc8c734ebe7e0f34dede511, type: 2}
