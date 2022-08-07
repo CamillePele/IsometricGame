@@ -29,7 +29,7 @@ namespace Companion.UI
             this.entity = entity;
             
             //Infos setup
-            _entityThumbnail.sprite = entity.entityData.entityThumbnail;
+            _entityThumbnail.sprite = entity.entityData.Icon;
             _entityName.text = entity.entityName;
             _entityLevel.text = "Level " + entity.entityLevel;
             _hpText.text = "HP: " + entity.gameStats.health;

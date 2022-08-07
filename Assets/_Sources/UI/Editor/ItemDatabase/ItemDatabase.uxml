@@ -1,0 +1,31 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <Style src="ItemDatabase.uss" />
+    <ui:VisualElement name="Container" style="margin-left: 5px; margin-right: 5px; margin-top: 5px; margin-bottom: 5px;">
+        <ui:VisualElement name="TypesTab" style="height: 30px;">
+            <ui:ScrollView scroll-deceleration-rate="0,135" elasticity="0,1" name="TypeListView" mode="Horizontal" show-horizontal-scroller="false" style="width: 100%; height: 100%;" />
+        </ui:VisualElement>
+        <ui:VisualElement style="width: auto; color: rgb(14, 14, 14); background-color: rgb(202, 202, 202); margin-left: 2px; margin-right: 2px; height: 1px;" />
+        <ui:VisualElement name="Container" style="flex-grow: 1; flex-direction: row; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0;">
+            <ui:VisualElement name="ItemsTab" style="width: 25%; margin-left: 5px; margin-right: 5px; margin-top: 5px; margin-bottom: 5px;">
+                <ui:VisualElement name="Header" style="flex-direction: row; border-bottom-color: rgb(0, 0, 0); margin-bottom: 5px; min-width: auto; max-width: none; max-height: 30px; min-height: 30px;">
+                    <ui:Label text="Items" display-tooltip-when-elided="true" style="flex-grow: 1; -unity-font-style: bold; font-size: 24px; -unity-text-align: middle-left;" />
+                    <ui:Button text="+" display-tooltip-when-elided="true" name="Btn_AddItem" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement style="width: 1px; color: rgb(14, 14, 14); background-color: rgb(202, 202, 202); margin-left: 2px; margin-right: 2px;" />
+            <ui:ScrollView name="ScrollView_Details" style="width: 75%; color: rgb(253, 253, 253); background-color: rgba(106, 106, 106, 0); margin-left: 5px; margin-right: 5px; margin-top: 5px; margin-bottom: 5px;">
+                <ui:VisualElement name="Header" style="flex-direction: row; background-color: rgba(38, 38, 38, 0); -unity-text-align: upper-left; align-items: center; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; border-bottom-color: rgba(255, 183, 0, 0); border-bottom-width: 1px;">
+                    <ui:Label text="Details" display-tooltip-when-elided="true" style="flex-grow: 1; -unity-font-style: bold; font-size: 24px; margin-left: 10px; margin-right: 10px; margin-top: 5px; margin-bottom: 5px; background-color: rgba(0, 0, 0, 0);" />
+                    <ui:Button text="Delete" display-tooltip-when-elided="true" name="Btn_DeleteItem" style="height: 25px; margin-right: 10px;" />
+                </ui:VisualElement>
+            </ui:ScrollView>
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:VisualElement name="DeletePopup" style="position: absolute; left: 25%; top: 25%; width: 50%; height: 100px; -unity-background-image-tint-color: rgb(255, 255, 255); background-color: rgb(56, 56, 56); background-image: none; border-left-color: rgb(47, 47, 47); border-right-color: rgb(47, 47, 47); border-top-color: rgb(47, 47, 47); border-bottom-color: rgb(47, 47, 47); border-left-width: 5px; border-right-width: 5px; border-top-width: 5px; border-bottom-width: 5px; border-top-left-radius: 5px; border-bottom-left-radius: 5px; border-top-right-radius: 5px; border-bottom-right-radius: 5px; visibility: hidden;">
+        <ui:Label text="Sure to delete ?" display-tooltip-when-elided="true" name="Header" class="details-header" />
+        <ui:VisualElement name="Container" style="flex-direction: row; justify-content: center; height: 100%; flex-grow: 1; flex-basis: auto;">
+            <ui:Button text="Yes delete" display-tooltip-when-elided="true" name="YesButton" style="width: 40%; height: 100%; margin-right: 5%; -unity-text-outline-color: rgb(255, 255, 255); color: rgb(209, 26, 42); font-size: 28px;" />
+            <ui:Button text="No save" display-tooltip-when-elided="true" name="NoButton" style="width: 40%; height: 100%; color: rgb(26, 150, 42); font-size: 28px;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

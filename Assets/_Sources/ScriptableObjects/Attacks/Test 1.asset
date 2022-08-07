@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a05458260b94c9aa82347efb63e395b, type: 3}
   m_Name: Test 1
   m_EditorClassIdentifier: 
+  ID: A96B4BFF-9348-4D94-956C-B9EF1A537D18
+  FriendlyName: 987
+  Icon: {fileID: 21300000, guid: 581d85386052d4c4583fc44c59d6fa7f, type: 3}
   attackName: 
   attackDamage: 20
   attackCost: 0

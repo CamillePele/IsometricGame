@@ -12,10 +12,10 @@ namespace SOSkeleton
             Debug.Log("DamageAttack");
             Manager.Game gameManager = Manager.Game.Instance;
             
-            float ownerDamage = isSpecial ? owner.gameStats.attackSpe : owner.gameStats.attack;
-            float ownerModifierDamage = isSpecial ? owner.modifiersStats.attackSpe : owner.modifiersStats.attack;
+            float ownerDamage = IsSpecial ? owner.gameStats.attackSpe : owner.gameStats.attack;
+            float ownerModifierDamage = IsSpecial ? owner.modifiersStats.attackSpe : owner.modifiersStats.attack;
             
-            float tempDamage = attackDamage;
+            float tempDamage = Damage;
             tempDamage += ownerDamage + ownerModifierDamage;
 
             int finalDamage = (int)tempDamage;

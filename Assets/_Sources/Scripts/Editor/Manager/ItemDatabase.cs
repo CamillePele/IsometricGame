@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Scripts.Misc;
 using SOSkeleton;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -13,7 +14,8 @@ namespace Editor.Manager
     public class ItemDatabase : EditorWindow
     {
         private Sprite m_DefaultItemIcon;
-        private static List<Item> m_ItemDatabase = new List<Item>();
+        private static Dictionary<Type, List<EditableObject>> m_ItemDatabase = new Dictionary<Type, List<EditableObject>>();
+        private List<Type> m_ItemTypes = new List<Type>();
         
         private VisualElement m_ItemsTab;
         private static VisualTreeAsset m_ItemRowTemplate;
@@ -22,11 +24,16 @@ namespace Editor.Manager
         
         private ScrollView m_DetailSection;
         private VisualElement m_LargeDisplayIcon;
-        private Item m_activeItem;
+        private EditableObject m_activeItem;
+        
+        private VisualElement m_TypesTab;
+        private static VisualTreeAsset m_TypeColumnTemplate;
+        private ScrollView m_TypeScrollView;
+        private Type m_activeItemType;
 
         private VisualElement m_DeletePopup;
 
-        [MenuItem("WUG/Item Database")]
+        [MenuItem("Iso Game/Prefab Manager")]
         public static void Init()
         {
             ItemDatabase wnd = GetWindow<ItemDatabase>();
@@ -40,15 +47,16 @@ namespace Editor.Manager
         public void CreateGUI()
         {
             var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>
-                ("Assets/_Sources/Scripts/Editor/Manager/ItemDatabase.uxml"); // TODO: Change to relative path
+                ("Assets/_Sources/UI/Editor/ItemDatabase/ItemDatabase.uxml"); // TODO: Change to relative path
             VisualElement rootFromUXML = visualTree.Instantiate();
             rootVisualElement.Add(rootFromUXML);
             
             //Import the ListView Item Template
-            m_ItemRowTemplate = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/_Sources/Scripts/Editor/Manager/ItemRowTemplate.uxml");
+            m_ItemRowTemplate = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/_Sources/UI/Editor/ItemDatabase/ItemRowTemplate.uxml");
+            m_TypeColumnTemplate = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/_Sources/UI/Editor/ItemDatabase/TypeButtonTemplate.uxml");
             
             var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>
-                ("Assets/_Sources/Scripts/Editor/Manager/ItemDatabase.uss"); // TODO: Change to relative path
+                ("Assets/_Sources/UI/Editor/ItemDatabase/ItemDatabase.uss"); // TODO: Change to relative path
             rootVisualElement.styleSheets.Add(styleSheet);
             
             m_DefaultItemIcon = (Sprite) AssetDatabase.LoadAssetAtPath(
@@ -57,12 +65,14 @@ namespace Editor.Manager
             LoadAllItems();
             
             m_ItemsTab = rootVisualElement.Q<VisualElement>("ItemsTab");
-            GenerateListView();
+            m_ItemsTab.style.visibility = Visibility.Hidden;
+            
+            m_TypesTab = rootVisualElement.Q<VisualElement>("TypesTab");
+            GenerateTypeView();
             
             m_DetailSection = rootVisualElement.Q<ScrollView>("ScrollView_Details");
             m_DetailSection.style.visibility = Visibility.Hidden;
-            m_LargeDisplayIcon = m_DetailSection.Q<VisualElement>("Icon");
-            
+
             rootVisualElement.Q<Button>("Btn_AddItem").clicked += AddItem_OnClick;
 
             m_DetailSection.Q<TextField>("ItemName")
@@ -103,15 +113,70 @@ namespace Editor.Manager
         private void LoadAllItems()
         {
             m_ItemDatabase.Clear();
-            string[] allGuid = AssetDatabase.FindAssets( "t:Item" );
+            string[] allGuid = AssetDatabase.FindAssets( "t:EditableObject" );
 
             foreach (string guid in allGuid)
             {
                 string path = AssetDatabase.GUIDToAssetPath(guid);
-                
-                m_ItemDatabase.Add(AssetDatabase.LoadAssetAtPath<Item>(path));
+
+                EditableObject item = AssetDatabase.LoadAssetAtPath<EditableObject>(path);
+                Type type = item.GetType();
+
+                if (!m_ItemDatabase.ContainsKey(type))
+                {
+                    m_ItemDatabase.Add(type, new List<EditableObject>());
+                    m_ItemTypes.Add(type);
+                }
+
+                m_ItemDatabase[type].Add(item);
             }
-            Debug.Log(m_ItemDatabase.Count + " items loaded");
+        }
+        
+        private void GenerateTypeView()
+        {
+            m_TypeScrollView = m_TypesTab.Q<ScrollView>("TypeListView");
+            
+            for (int i = 0; i < m_ItemTypes.Count; i++)
+            {
+                VisualElement typeColumn = m_TypeColumnTemplate.CloneTree();
+                
+                Button typeButton = typeColumn.Q<Button>("Button");
+                typeButton.text = m_ItemTypes[i].Name;
+                
+                int index = i;
+                typeButton.clicked += () =>
+                {
+                    TypeView_onSelectionChange(index);
+                };
+                
+                m_TypeScrollView.Add(typeColumn);
+            }
+        }
+        
+        private void TypeView_onSelectionChange(int selectedIndex)
+        {
+            if (selectedIndex == m_ItemTypes.IndexOf(m_activeItemType)) return;
+
+            // Destroy the old list view if it exists
+            if (m_ItemListView != null)
+            {
+                m_ItemListView.RemoveFromHierarchy();
+                m_ItemListView = null;
+            }
+            
+            m_activeItemType = m_ItemTypes[selectedIndex];
+            
+            // Remove Content from ScrollView
+            VisualElement content = m_DetailSection.Q<VisualElement>("Content");
+            if (content != null) content.hierarchy.parent.RemoveFromHierarchy();
+            VisualTreeAsset newContent = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(m_ItemDatabase[m_activeItemType][0].VisualTreeAsset);
+            m_DetailSection.Add(newContent.CloneTree());
+            
+            m_LargeDisplayIcon = m_DetailSection.Q<VisualElement>("Icon");
+
+            GenerateListView();
+            m_ItemsTab.style.visibility = Visibility.Visible;
+            m_DetailSection.style.visibility = Visibility.Hidden;
         }
         
         private void GenerateListView()
@@ -121,15 +186,15 @@ namespace Editor.Manager
             Action<VisualElement, int> bindItem = (e, i) =>
             {
                 e.Q<VisualElement>("Icon").style.backgroundImage = 
-                    m_ItemDatabase[i] == null ?
-                    m_DefaultItemIcon.texture : m_ItemDatabase[i].Icon.texture;
+                    m_ItemDatabase[m_activeItemType][i].Icon == null ?
+                    m_DefaultItemIcon.texture : m_ItemDatabase[m_activeItemType][i].Icon.texture;
                 
-                e.Q<Label>("Name").text = m_ItemDatabase[i].FriendlyName;
+                e.Q<Label>("Name").text = m_ItemDatabase[m_activeItemType][i].FriendlyName;
             };
             
-            m_ItemListView = new ListView(m_ItemDatabase, 35, makeItem, bindItem);
+            m_ItemListView = new ListView(m_ItemDatabase[m_activeItemType], 35, makeItem, bindItem);
             m_ItemListView.selectionType = SelectionType.Single;
-            m_ItemListView.style.height = m_ItemDatabase.Count * m_ItemHeight;
+            m_ItemListView.style.height = m_ItemDatabase[m_activeItemType].Count * m_ItemHeight;
             m_ItemsTab.Add(m_ItemListView);
             
             m_ItemListView.onSelectionChange += ListView_onSelectionChange;
@@ -137,7 +202,7 @@ namespace Editor.Manager
         
         private void ListView_onSelectionChange(IEnumerable<object> selectedItems)
         {
-            m_activeItem = (Item)selectedItems.First();
+            m_activeItem = (EditableObject)selectedItems.First();
             SerializedObject so = new SerializedObject(m_activeItem);
             m_DetailSection.Bind(so);
             if (m_activeItem.Icon != null)
@@ -151,13 +216,13 @@ namespace Editor.Manager
         private void AddItem_OnClick()
         {
             //Create an instance of the scriptable object and set the default parameters
-            Item newItem = CreateInstance<Item>();
+            EditableObject newItem = CreateInstance<EditableObject>();
             newItem.FriendlyName = $"New Item";
             newItem.Icon = m_DefaultItemIcon;
             //Create the asset, using the unique ID for the name
             AssetDatabase.CreateAsset(newItem, $"Assets/_Sources/{newItem.ID}.asset");
             //Add it to the item list
-            m_ItemDatabase.Add(newItem);
+            m_ItemDatabase[m_activeItemType].Add(newItem);
             //Refresh the ListView so everything is redrawn again
             m_ItemListView.Refresh();
             m_ItemListView.style.height = m_ItemDatabase.Count * m_ItemHeight;
@@ -169,7 +234,7 @@ namespace Editor.Manager
             string path = AssetDatabase.GetAssetPath(m_activeItem);
             AssetDatabase.DeleteAsset(path);
             //Purge the reference from the list and refresh the ListView
-            m_ItemDatabase.Remove(m_activeItem);
+            m_ItemDatabase[m_activeItemType].Remove(m_activeItem);
             m_ItemListView.Refresh();
             //Nothing is selected, so hide the details section
             m_DetailSection.style.visibility = Visibility.Hidden;

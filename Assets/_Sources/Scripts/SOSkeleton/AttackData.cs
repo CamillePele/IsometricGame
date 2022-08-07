@@ -1,17 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using Array2DEditor;
+using Scripts.Misc;
 using UnityEngine;
 
 namespace SOSkeleton
 {
     [CreateAssetMenu(fileName = "AttackData", order = 1)]
-    public abstract class AttackData : ScriptableObject
+    public abstract class AttackData : EditableObject
     {
-        public string attackName;
-        public int attackDamage;
-        public int attackCost;
-        public bool isSpecial;
+        public override string VisualTreeAsset { get => "Assets/_Sources/UI/Editor/ItemDatabase/AttackContent.uxml"; }
+        
+        public int Damage;
+        public int AttackCost;
+        public bool IsSpecial;
+        public EntityType Type;
+        public float RandomRange;
         
         [SerializeField] public Array2DInt _attackPatternArray;
         [SerializeField] public Vector2Int attackPivot;

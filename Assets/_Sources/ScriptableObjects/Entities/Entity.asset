@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 003cac80dfdb4dd2bc7bf395e4a3cda9, type: 3}
   m_Name: Entity
   m_EditorClassIdentifier: 
-  entityName: 
-  entityDescription: 
+  ID: 127C3E89-1F37-47CA-8A51-BD4355C5DC41
+  FriendlyName: 123465
+  Icon: {fileID: 21300000, guid: 6df44e13b52ee8c41b3928717b621c6a, type: 3}
   entityThumbnail: {fileID: 21300000, guid: 7dbce8b7477cd5a4bbecdc3966342eef, type: 3}
   constStats:
     statMax: 100
