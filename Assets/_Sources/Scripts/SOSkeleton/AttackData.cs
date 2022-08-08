@@ -6,7 +6,6 @@ using UnityEngine;
 
 namespace SOSkeleton
 {
-    [CreateAssetMenu(fileName = "AttackData", order = 1)]
     public abstract class AttackData : EditableObject
     {
         public override string VisualTreeAsset { get => "Assets/_Sources/UI/Editor/ItemDatabase/AttackContent.uxml"; }

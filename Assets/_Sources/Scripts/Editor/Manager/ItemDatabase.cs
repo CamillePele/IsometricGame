@@ -207,7 +207,22 @@ namespace Editor.Manager
             m_DetailSection.Bind(so);
             if (m_activeItem.Icon != null)
             {
-                m_LargeDisplayIcon.style.backgroundImage = m_activeItem.Icon.texture;
+                m_DetailSection.Q<ObjectField>("IconPicker")
+                    .RegisterValueChangedCallback(evt =>
+                    {
+                        Sprite newSprite = evt.newValue as Sprite;
+                        m_activeItem.Icon = newSprite == null ? m_DefaultItemIcon : newSprite;
+                        m_LargeDisplayIcon.style.backgroundImage = newSprite == 
+                                                                   null ? m_DefaultItemIcon.texture : newSprite.texture;
+                        m_ItemListView.Refresh();
+                    });
+                
+                m_DetailSection.Q<TextField>("ItemName")
+                    .RegisterValueChangedCallback(evt => 
+                    {
+                        m_activeItem.FriendlyName = evt.newValue;
+                        m_ItemListView.Refresh();
+                    });
             }
             m_DetailSection.style.visibility = Visibility.Visible;
         }

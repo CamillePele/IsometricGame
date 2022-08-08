@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace SOSkeleton
 {
+    [CreateAssetMenu(fileName = "AttackData", order = 1)]
     public class DamageAttack : AttackData
     {
         public override void ApplyAttack(Entity owner, List<Tuple<Vector2Int, int>> cellToAttack)
