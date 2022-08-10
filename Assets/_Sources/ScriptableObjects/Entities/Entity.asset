@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Entity
   m_EditorClassIdentifier: 
   ID: 127C3E89-1F37-47CA-8A51-BD4355C5DC41
-  FriendlyName: 123465
+  FriendlyName: vghvghv
   Icon: {fileID: 21300000, guid: 6df44e13b52ee8c41b3928717b621c6a, type: 3}
   Description: 
   constStats:
@@ -35,3 +35,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a6a8ab10b23c92e4b8cdb22649c10192, type: 2}
   - {fileID: 11400000, guid: c57b984fbdee8cf4393aab703bb5b8a8, type: 2}
   - {fileID: 11400000, guid: 5ad8f1c62fc8c734ebe7e0f34dede511, type: 2}
+  AvailableAttacksNames: []

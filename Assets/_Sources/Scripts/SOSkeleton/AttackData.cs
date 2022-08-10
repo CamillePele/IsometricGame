@@ -8,8 +8,6 @@ namespace SOSkeleton
 {
     public abstract class AttackData : EditableObject
     {
-        public override string VisualTreeAsset { get => "Assets/_Sources/UI/Editor/ItemDatabase/AttackContent.uxml"; }
-        
         public int Damage;
         public int AttackCost;
         public bool IsSpecial;

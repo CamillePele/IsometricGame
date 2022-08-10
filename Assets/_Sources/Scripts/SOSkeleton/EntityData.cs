@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Classes;
 using Scripts.Misc;
+using SOSkeleton;
 using UnityEngine;
 
 namespace SOSkeleton
@@ -9,11 +10,6 @@ namespace SOSkeleton
     [CreateAssetMenu(fileName = "Entity", order = 1)]
     public class EntityData : EditableObject
     {
-        public override string VisualTreeAsset { get => "Assets/_Sources/UI/Editor/ItemDatabase/EntityContent.uxml"; }
-
-        // [SerializeField] public string entityName;
-        // public string entityDescription;
-        
         public EntityStats constStats; // type stats
         
         public EntityType TypeOne;
@@ -21,8 +17,16 @@ namespace SOSkeleton
         
         public int PM;
         public List<AttackData> AvailableAttacks = new List<AttackData>();
+        public List<ValueTest> AvailableAttacksNames = new List<ValueTest>();
         // public Dictionary<int, AttackData> attackDictionary = new Dictionary<int, AttackData>(); // <level, attackLearned>
     }
+}
+
+[Serializable]
+public struct ValueTest
+{
+    public string name;
+    public bool enabled;
 }
 
 public enum EntityType // TODO: temporary
